@@ -1,0 +1,331 @@
+.cs-container {
+    max-width: 880px;
+    padding: 30px 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.cs-invoice.cs-style1 {
+    background: #fff;
+    border-radius: 10px;
+    padding: 50px;
+}
+#download_section p, div {
+    margin-top: 0;
+    line-height: 1.5em;
+}
+.cs-invoice.cs-style1 .cs-invoice_head.cs-type1 {
+    -webkit-box-align: end;
+    -ms-flex-align: end;
+    align-items: flex-end;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.cs-invoice.cs-style1 .cs-invoice_head {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+.cs-mb25 {
+    margin-bottom: 25px;
+}
+.cs-invoice.cs-style1 .cs-invoice_left {
+    max-width: 55%;
+}
+.cs-primary_color {
+    color: #111111;
+}
+
+.cs-mb5 {
+    margin-bottom: 5px;
+}
+.cs-f16 {
+    font-size: 16px;
+}
+b, strong {
+    font-weight: bold;
+}
+.cs-primary_color {
+    color: #111111;
+}
+
+.cs-m0 {
+    margin: 0px;
+}
+.cs-text_right {
+    text-align: right;
+}
+
+.cs-mb5 {
+    margin-bottom: 5px;
+}
+img {
+    border: 0;
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+.cs-invoice.cs-style1 .cs-invoice_head {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.cs-mb10 {
+    margin-bottom: 10px;
+}
+.cs-invoice.cs-style1 .cs-invoice_left {
+    max-width: 55%;
+}
+.cs-container p {
+    margin-bottom: 15px;
+}
+.cs-invoice.cs-style1 .cs-note {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    margin-top: 40px;
+}
+.cs-invoice.cs-style1 .cs-note_left {
+    margin-right: 10px;
+    margin-top: 6px;
+    margin-left: -5px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+.cs-invoice.cs-style1 .cs-note_left svg {
+    width: 32px;
+}
+.cs-primary_color {
+    color: #111111;
+}
+
+.cs-bold {
+    font-weight: 700;
+}
+.cs-m0 {
+    margin: 0px;
+}
+.cs-invoice_btns {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    margin-top: 30px;
+}
+.cs-invoice_btns .cs-invoice_btn:first-child {
+    border-radius: 5px 0 0 5px;
+}
+
+.cs-invoice_btn.cs-color1 {
+    color: #111111;
+    background: rgba(42, 209, 157, 0.15);
+}
+.cs-invoice_btn {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    border: none;
+    font-weight: 600;
+    padding: 8px 20px;
+    cursor: pointer;
+}
+a {
+    color: inherit;
+    text-decoration: none;
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+a {
+    background-color: transparent;
+}
+.cs-invoice_btn svg {
+    width: 24px;
+    margin-right: 5px;
+}
+.cs-invoice_btns .cs-invoice_btn:last-child {
+    border-radius: 0 5px 5px 0;
+}
+
+.cs-invoice_btn.cs-color2 {
+    color: #fff;
+    background: #2ad19d;
+}
+.cs-invoice_btn {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    border: none;
+    font-weight: 600;
+    padding: 8px 20px;
+    cursor: pointer;
+}
+button {
+    color: inherit;
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+.cs-invoice_btn svg {
+    width: 24px;
+    margin-right: 5px;
+}
+.cs-round_border {
+    border: 1px solid #eaeaea;
+    overflow: hidden;
+    border-radius: 6px;
+}
+.cs-table_responsive {
+    overflow-x: auto;
+}
+.cs-table_responsive > table {
+    min-width: 600px;
+}
+
+table {
+    width: 100%;
+    caption-side: bottom;
+    border-collapse: collapse;
+}
+.cs-focus_bg {
+    background: #f6f6f6;
+}
+
+.cs-primary_color {
+    color: #111111;
+}
+.cs-width_3 {
+    width: 25%;
+}
+.cs-semi_bold {
+    font-weight: 600;
+}
+td, th {
+    padding: 10px 15px;
+    line-height: 1.55em;
+}
+th {
+    text-align: left;
+}
+
+th {
+    display: table-cell;
+    vertical-align: inherit;
+    font-weight: bold;
+    text-align: -internal-center;
+}
+.cs-focus_bg {
+    background: #f6f6f6;
+}
+
+.cs-primary_color {
+    color: #111111;
+}
+.cs-width_4 {
+    width: 33.33333333%;
+}
+.cs-semi_bold {
+    font-weight: 600;
+}
+td, th {
+    padding: 10px 15px;
+    line-height: 1.55em;
+}
+th {
+    text-align: left;
+}
+.cs-width_2 {
+    width: 16.66666667%;
+}
+
+td, th {
+    padding: 10px 15px;
+    line-height: 1.55em;
+}
+td {
+    border-top: 1px solid #eaeaea;
+}
+td {
+    display: table-cell;
+    vertical-align: inherit;
+}
+table {
+    width: 100%;
+    caption-side: bottom;
+    border-collapse: collapse;
+}
+table {
+    border-collapse: separate;
+    text-indent: initial;
+    border-spacing: 2px;
+}
+.cs-invoice.cs-style1 .cs-left_footer {
+    width: 55%;
+    padding: 10px 15px;
+}
+.cs-invoice.cs-style1 .cs-right_footer {
+    width: 46%;
+}
+.cs-invoice.cs-style1 .cs-invoice_footer table {
+    margin-top: -1px;
+}
+
+table {
+    width: 100%;
+    caption-side: bottom;
+    border-collapse: collapse;
+}
+.cs-border_left {
+    border-left: 1px solid #eaeaea;
+}
+
+
+.cs-focus_bg {
+    background: #f6f6f6;
+}
+.cs-primary_color {
+    color: #111111;
+}
+.cs-width_3 {
+    width: 25%;
+}
+.cs-semi_bold {
+    font-weight: 600;
+}
+td, th {
+    padding: 10px 15px;
+    line-height: 1.55em;
+}
+td {
+    border-top: 1px solid #eaeaea;
+}
+
+.cs-invoice.cs-style1 .cs-invoice_footer {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.cs-border_top {
+    border-top: 1px solid #eaeaea;
+}
+.invoice-4 .invoice-bottom {
+    padding: 0 50px 10px;
+}

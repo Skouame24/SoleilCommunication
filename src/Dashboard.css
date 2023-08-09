@@ -34,3 +34,7 @@
     width: 0!important;
     overflow: hidden;
 }
+.Card.expanded {
+    width: 81%;
+  }
+  

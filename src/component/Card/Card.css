@@ -1,0 +1,194 @@
+.Card {
+    width: 81%;
+    height: 85%;
+    position: absolute;
+    top: 80px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .header{
+    color: #222;
+    margin-bottom: 18px;
+    font-size: 35px;
+    font-weight: bold;
+    margin: 20px;
+  }
+  .togged{
+    width: 81%;
+    height: 85%;
+    position: absolute;
+    top: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .cardexpanded {
+    width: 81px;
+  }
+  
+  .card-one {
+    width: 26%;
+    margin: 20px;
+    height: 70%;
+    cursor: pointer;
+    background-color: white;
+    box-shadow: 0 15px 20px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    transition: filter 0.3s, transform 0.3s;
+}
+  
+  .card-one:hover {
+    transform: scale(1.05); /* Légère augmentation de l'échelle lors du survol */
+    filter: brightness(95%); /* Assombrir la carte lors du survol */
+  
+  }
+  
+  .image {
+    max-width: 100%;
+    max-height: 100%;
+    transition: transform 0.3s; /* Ajout d'une transition pour l'effet de survol */
+  }
+  
+  .card-one:hover .image {
+    transform: scale(1.1); /* Légère augmentation de l'échelle de l'image lors du survol */
+  }
+  
+  .titre {
+    width: 100%;
+    font-size: 20px;
+    height: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    color: white;
+    background-color: black;
+    font-size: 20px;
+    font-weight: bold;
+    opacity: 0;
+  }
+  
+  
+  .survole {
+    position: absolute;
+    bottom: 139px;
+    background-color: black;
+    color: white;
+  
+  }
+  
+  
+  .image-one {
+    max-width: 40%;
+    max-height: 100%;
+    margin-left: 100px;
+    margin-bottom: 10px;
+    transition: transform 0.3s; /* Ajout d'une transition pour l'effet de survol */
+  }
+  
+  .card-one:hover .image-one {
+    transform: scale(1.1); /* Légère augmentation de l'échelle de l'image lors du survol */
+  }
+    .card-two {
+      width: 60%;
+      margin: 20px;
+      height: 85%;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .top,
+    .bottom {
+      height: 45%;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    
+    .right {
+      height: 100%;
+      width: 48%;
+      background-color: white;
+      box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      justify-content: flex-end;
+    }
+    
+    .left {
+      height: 100%;
+      width: 48%;
+      cursor: pointer;
+      background-color: white;
+      box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      justify-content: flex-start;
+    }
+    .right1 {
+      height: 100%;
+      width: 48%;
+      background-color: white;
+      box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      border-radius: 10px;
+      justify-content: flex-end;
+    }
+    
+    .left1 {
+      height: 100%;
+      width: 48%;
+      cursor: pointer;
+      background-color: white;
+      box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
+       border-radius: 10px;
+      justify-content: flex-start;
+    }
+    .count{
+      margin-left: 10px;
+      background-color: #ccc;
+      width: 5%;
+      padding-left: 3px;
+      border-radius: 10px;
+  }
+  
+  
+  .left:hover,
+  .left1:hover,
+  .right:hover,
+  .right1:hover {
+  filter: brightness(98%); /* Assombrir la carte lors du survol */
+  }
+  .left:hover .overlay-text ,
+  .left1:hover .overlay-text ,
+  .right:hover .overlay-text ,
+  .right1:hover .overlay-text {
+  opacity: 61;
+  }
+  .left:hover .image-one {
+    transform: scale(1.1); /* Légère augmentation de l'échelle de l'image lors du survol */
+  }
+  .left1:hover .image-one,
+  .right:hover .image-one,
+  .right1:hover .image-one {
+    transform: scale(1.4); /* Légère augmentation de l'échelle de l'image lors du survol */
+  }
+  @media (max-width: 768px) {
+    .card-one {
+      width: 50%;
+  
+    }
+  }
+  

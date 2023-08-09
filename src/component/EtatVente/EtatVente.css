@@ -1,0 +1,22 @@
+.page-header.page-header-dark {
+    color: rgba(255, 255, 255, 0.5);
+}
+.bg-gradient-primary-to-secondary {
+    background-color: #0061f2 !important;
+    background-image: linear-gradient(135deg, #0061f2 0%, rgba(105, 0, 199, 0.8) 100%) !important;
+}
+.pb-10 {
+    padding-bottom: 6rem !important;
+}
+/* EtatVente.css */
+.card-container {
+    margin-top: -65px; /* Vous pouvez ajuster la valeur ici pour définir le chevauchement souhaité */
+    z-index: 2; /* Assurez-vous que le z-index est supérieur à celui du header pour que les cards soient au-dessus */
+  }
+  .entete{
+    top: 72px;
+    position: absolute;
+    left: 222px;
+    right: 0px;
+    width: 83.5%;
+}

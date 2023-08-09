@@ -1,0 +1,18 @@
+.bouton {
+    display: block;
+    width: 10%;
+    float: left;
+    height: 20%;
+    border-radius: 15px;
+    outline: none;
+    border: none;
+    background-image: linear-gradient(to right, #4e73df, #36b9cc, #6f42c1);
+    background-size: 200%;
+    font-size: 1.2rem;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: .5s;
+    margin-left: 13px;
+    margin-bottom: 5px;
+}
