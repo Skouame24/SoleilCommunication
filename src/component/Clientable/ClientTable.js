@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Importez le composant Link
-
 
 const ClientsTable = () => {
   const clients = [
@@ -60,10 +58,8 @@ const ClientsTable = () => {
       </div>
       <section className='Clients'>
         <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
-        <Link to="/formclient" className="bouton">
-            Ajouter 
-          </Link>
-                    <div className="input-group" style={{ width: '50%' }}>
+          <input type="submit" value="Ajouter " className="bouton" />
+          <div className="input-group" style={{ width: '50%' }}>
             <input
               type="text"
               className="form-control bg-white border-0 small rounded-end"

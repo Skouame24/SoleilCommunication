@@ -81,12 +81,12 @@ const FormVente = () => {
           <div className="col-lg-12">
             <div className="mb-3 card">
               <div className="mb-3 card">
-                <h6 className="bg-primary card-header" style={{color:'white'}}>Details Fournisseur</h6>
+                <h6 className="bg-primary card-header" style={{color:'white'}}>Details client</h6>
                 <div className="card-body">
   <div className="gx-2 gy-3 row">
     <div className="col-md-6">
       <div className="d-flex align-items-center">
-        <label className="form-label" style={{color:'black'}}>Fournisseur:</label>
+        <label className="form-label" style={{color:'black'}}>Client:</label>
         <select name="importStatus" className="form-select" style={{
             width:'76%',
             padding:'5px',
@@ -94,9 +94,9 @@ const FormVente = () => {
             marginLeft:"12px"
           }}>
           <option value="">Select</option>
-          <option value="imported">Fournisseur 1</option>
-          <option value="processing">Fournisseur 2</option>
-          <option value="validating">Fournisseur 3</option>
+          <option value="imported">client 1</option>
+          <option value="processing">client 2</option>
+          <option value="validating">client 3</option>
         </select>
         <div className="invalid-feedback" />
       </div>

@@ -151,7 +151,7 @@ const EtatAchat = () => {
     </div>
   </div>
   <ResponsiveTable />
-  <AchatTable  />
+  <AchatTable    />
 </section>
   )
 }

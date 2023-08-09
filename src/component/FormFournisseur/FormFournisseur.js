@@ -49,7 +49,7 @@ const FormFournisseur = () => {
         <button type="submit" className="bouton mr-2">
           Submit
         </button>
-        <button className="bouton">Cancel</button>
+        <button className="bouton " >Cancel</button>
         </div>
       </form>
     </div>
