@@ -24,8 +24,13 @@ import SortieArticle from './component/SortieArticle/SortieArticle';
 import FournisseursTable from './component/FournisseurTable/FournisseursTable';
 import ClientsTable from './component/Clientable/ClientTable';
 import Finance from './component/finance/finance';
+import Setting from './component/Setting/Setting';
+import FactureVente from './component/Facture/FactureVente';
+import Informatique from './component/Informatique/Informatique';
+import Fourniture from './component/Fourniture/Fourniture';
+import Communication from './component/Communication/Communication';
 
-function Dashboard() {
+function Dashboard({ userData }) {
   const [style, setStyle] = useState("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion");
 
   const changeStyle = () => {
@@ -52,13 +57,16 @@ function Dashboard() {
             {/*  <!-- Main Content --> */}
             <div id="content">
               {/*  <!-- Topbar --> */}
-              <Navabar />
+              <Navabar userData={userData}/>
               {/*  <!-- End of Topbar --> */}
 
               {/*   <!-- /.container-fluid --> */}
               <div className="container-fluid">
                 <Routes>
                 <Route path='/EtatAchat' element={< EtatAchat/>} />
+                <Route path='/informatique' element={< Informatique/>} />
+                <Route path='/fourniture' element={< Fourniture/>} />
+                <Route path='/communication' element={< Communication/>} />
                 <Route path='/formAchat' element={< FormAchat/>} />
                 <Route path='/' element={< Card/>} />
                 <Route path='/formVente' element={< FormVente/>} />
@@ -69,12 +77,14 @@ function Dashboard() {
                 <Route path='/fournisseurTable' element={< FournisseursTable/>} />
                 <Route path='/createArticle' element={< CreateArticle/>} />
                 <Route path='/createMagasin' element={< CreateMagasin/>} />
-                <Route path='/facture' element={< Facture/>} />
+                <Route path="/facture/:achatId" element={<Facture />} />
+                <Route path="/facturevente/:venteId" element={<FactureVente />} />
                 <Route path='/base' element={< BaseArticle/>} />
                 <Route path='/entree' element={< EntreeStock/>} />
                 <Route path='/directe' element={< Directe/>} />
                 <Route path='/sortie' element={< SortieArticle/>} />
                 <Route path='/finance' element={<Finance />} />
+                <Route path='/setting' element={<Setting  userData={userData}/>} />
                 </Routes>
               </div>
             </div>

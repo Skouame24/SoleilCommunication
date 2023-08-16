@@ -1,29 +1,46 @@
-import { faCheck, faHourglass, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
-import ResponsiveTable from '../ResponsiveTable/ResponsiveTable';
-import VenteTable from '../VenteTable/VenteTable';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { faCheck, faHourglass, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AchatTable from '../AchatTable/AchatTable';
 
 const EtatAchat = () => {
-    
-    const fournisseurs = [
-        {
-          nom: 'Dupont',
-          prenom: 'Jean',
-          email: 'jean.dupont@example.com',
-          contact: '+33 6 12 34 56 78',
-          localisation: 'Paris, France',
-        },
-        {
-          nom: 'Martin',
-          prenom: 'Sophie',
-          email: 'sophie.martin@example.com',
-          contact: '+33 6 98 76 54 32',
-          localisation: 'Lyon, France',
-        },
-        // Ajoutez d'autres fournisseurs si nécessaire
-      ];
+  const [totalAchats, setTotalAchats] = useState(0); // État pour stocker le nombre total d'achats
+  const [achatsDuJour, setAchatsDuJour] = useState(0); // État pour stocker le nombre d'achats du jour
+  const [achatsDeLaSemaine, setAchatsDeLaSemaine] = useState(0); // État pour stocker le nombre d'achats de la semaine
+  const [fournisseurs, setFournisseurs] = useState([]); // État pour stocker les fournisseurs
+
+  useEffect(() => {
+    // Récupérer les données des achats depuis votre API
+    const fetchAchats = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/achats');
+        const achats = response.data.achats;
+
+        // Calculer le nombre total d'achats
+        const totalAchats = achats.length;
+        setTotalAchats(totalAchats);
+
+        // Filtrer les achats du jour
+        const dateDuJour = new Date().toISOString().split('T')[0]; // Date au format 'YYYY-MM-DD'
+        const achatsJour = achats.filter(achat => achat.dateAchat === dateDuJour);
+        setAchatsDuJour(achatsJour.length);
+
+        // Filtrer les achats de la semaine
+        const dateActuelle = new Date();
+        const debutSemaine = new Date(dateActuelle.getFullYear(), dateActuelle.getMonth(), dateActuelle.getDate() - dateActuelle.getDay());
+        const achatsSemaine = achats.filter(achat => new Date(achat.dateAchat) >= debutSemaine);
+        setAchatsDeLaSemaine(achatsSemaine.length);
+      // Calculer le nombre de fournisseurs distincts
+      const fournisseursIds = new Set(achats.map(achat => achat.fournisseurId));
+      setFournisseurs(Array.from(fournisseursIds));
+    } catch (error) {
+      console.error('Erreur lors de la récupération des achats:', error);
+    }
+  };
+
+    fetchAchats();
+  }, []);
   return (
     <section>
 <header className="page-header page-header-dark bg-gradient-primary-to-secondary pb-10 full-width-header entete">
@@ -80,10 +97,7 @@ const EtatAchat = () => {
             </div>
           </div>
           <div>
-            <h3 className="fw-bold">18</h3>
-            <p className="mb-0">
-              <span classname="text-dark me-2">22%</span> Completed
-            </p>
+          <h3 className="fw-bold">{totalAchats}</h3>
           </div>
         </div>
       </div>
@@ -93,17 +107,15 @@ const EtatAchat = () => {
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h4 className="mb-0">achat en cours </h4>
+              <h4 className="mb-0">Achat du jours </h4>
             </div>
             <div className="icon-shape icon-md bg-light-primary text-primary rounded-2">
                 <FontAwesomeIcon icon={faHourglass} />
             </div>
           </div>
           <div>
-            <h3 className="fw-bold">12</h3>
-            <p className="mb-0">
-              <span classname="text-dark me-2">20%</span> Completed
-            </p>
+            <h3 className="fw-bold">{achatsDuJour}</h3>
+           
           </div>
         </div>
       </div>
@@ -113,17 +125,15 @@ const EtatAchat = () => {
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h4 className="mb-0">Achat annules</h4>
+              <h4 className="mb-0">Achat Semaine</h4>
             </div>
             <div className="icon-shape icon-md bg-light-primary text-primary rounded-2">
             <FontAwesomeIcon icon={faXmark} />
             </div>
           </div>
           <div>
-            <h3 className="fw-bold">10</h3>
-            <p className="mb-0">
-              <span classname="text-dark me-2">5%</span> avance
-            </p>
+            <h3 className="fw-bold">{achatsDeLaSemaine}</h3>
+           
           </div>
         </div>
       </div>
@@ -133,25 +143,20 @@ const EtatAchat = () => {
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h4 className="mb-0">Achat effectue</h4>
+              <h4 className="mb-0">Fournisseur </h4>
             </div>
             <div className="icon-shape icon-md bg-light-primary text-primary rounded-2">
             <FontAwesomeIcon icon={faCheck} />
-
             </div>
           </div>
           <div>
-            <h3 className="fw-bold">10</h3>
-            <p className="mb-0">
-              <span classname="text-dark me-2">5%</span> Completed
-            </p>
+            <h3 className="fw-bold">{fournisseurs.length}</h3>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <ResponsiveTable />
-  <AchatTable    />
+  <AchatTable   />
 </section>
   )
 }

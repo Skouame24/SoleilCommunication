@@ -1,24 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const ClientsTable = () => {
-  const clients = [
-    {
-      nom: 'Dupont',
-      prenom: 'Jean',
-      email: 'jean.dupont@example.com',
-      contact: '+33 6 12 34 56 78',
-      localisation: 'Paris, France',
-    },
-    {
-      nom: 'Martin',
-      prenom: 'Sophie',
-      email: 'sophie.martin@example.com',
-      contact: '+33 6 98 76 54 32',
-      localisation: 'Lyon, France',
-    },
-    // ... Ajoutez d'autres clients si nécessaire
-  ];
+  const [clients, setClients] = useState([]);
 
+
+  useEffect(() => {
+    // Effectuez la requête GET pour récupérer les données des clients
+    axios.get('http://localhost:5001/api/clients')
+      .then(response => {
+        setClients(response.data.clients);
+        // ...
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des clients :', error);
+      });
+  }, []);
   const itemsPerPage = 4;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,7 +56,13 @@ const ClientsTable = () => {
       </div>
       <section className='Clients'>
         <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
-          <input type="submit" value="Ajouter " className="bouton" />
+        <Link to="/formClient" className=" bouton text-center"
+      style={{listStyle:"none",
+              textDecoration:"none",
+         }}
+      >
+        Ajouter
+      </Link>
           <div className="input-group" style={{ width: '50%' }}>
             <input
               type="text"

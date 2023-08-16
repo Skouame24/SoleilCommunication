@@ -1,15 +1,39 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 
+
+
+const getCategoryName = (categoryId) => {
+  switch (categoryId) {
+    case 1:
+      return 'Informatique';
+    case 2:
+      return 'Fourniture';
+    case 3:
+      return 'Communication';
+    default:
+      return 'Autre';
+  }
+};
 const BaseArticle = () => {
-    const articles = [
-        { id: 1, name: 'Stylo à bille', category: 'Bureautique', quantity: 50, storeName: 'Magasin A' },
-        { id: 2, name: 'Carnet de notes', category: 'Bureautique', quantity: 30, storeName: 'Magasin B' },
-        { id: 3, name: 'Marqueurs fluo', category: 'Bureautique', quantity: 20, storeName: 'Magasin C' },
-        { id: 4, name: 'Agrafeuse de bureau', category: 'Bureautique', quantity: 15, storeName: 'Magasin A' },
-        { id: 5, name: 'Enveloppes', category: 'Bureautique', quantity: 100, storeName: 'Magasin B' },
-        { id: 6, name: 'Ordinateur portable', category: 'Informatique', quantity: 5, storeName: 'Magasin C' },
-        // ... Ajoutez les quantités et noms de magasin pour les autres articles
-      ];
+  const [articles, setArticles] = useState([]);
+  // ... Autres états et fonctions ...
+
+  // Effectuer la requête GET lors du chargement du composant
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  // Fonction pour récupérer les articles depuis l'API
+  const fetchArticles = async () => {
+    try {
+      const response = await axios.get('http://localhost:5001/api/articles');
+      setArticles(response.data.articles); // Assurez-vous que la structure des données correspond
+      console.log(response.data.articles)
+    } catch (error) {
+      console.error('Erreur lors de la récupération des articles:', error);
+    }
+  };
       const theadStyle = {
         backgroundColor: '#4e73df',
         color: '#ffffff',
@@ -69,6 +93,18 @@ const BaseArticle = () => {
     );
     setFilteredArticles(filtered);
   };
+  // Fonction pour supprimer un article par son ID
+  const deleteArticle = async (articleId) => {
+    try {
+      // Faites la requête DELETE à votre API avec l'ID de l'article à supprimer
+      await axios.delete(`http://localhost:5001/api/articles/${articleId}`);
+
+      // Mettez à jour la liste des articles en rechargeant les données depuis l'API
+      fetchArticles();
+    } catch (error) {
+      console.error('Erreur lors de la suppression de l\'article:', error);
+    }
+  };
 
  return (
    <div>
@@ -100,17 +136,21 @@ const BaseArticle = () => {
                  <tr>
                    <th scope="col">Designation</th>
                    <th scope="col">Quantite</th>
-                   <th scope="col">Nom du magasin</th>
-                   <th scope="col">Activité</th>
+                   <th scope="col">Domaine activite</th>
+                   <th scope="col">Action</th>
                  </tr>
                </thead>
                <tbody>
                  {displayedArticles.map((article) => (
                    <tr key={article.id}>
-                     <td>{article.name}</td>
-                     <td>{article.quantity}</td>
-                     <td>{article.storeName}</td>
-                     <td>{article.category}</td>
+                     <td>{article.designation}</td>
+                     <td>{article.quantite}</td>
+                     <td>{getCategoryName(article.categorieId)}</td> {/* Utilisation de la fonction getCategoryName */}
+                     <td> <i
+                className="fas fa-trash-alt"
+                style={{ marginLeft: '10px', cursor: 'pointer' }}
+                onClick={() => deleteArticle(article.id)}
+              ></i></td>
                    </tr>
                  ))}
                </tbody>

@@ -1,59 +1,155 @@
-import React, { useState } from 'react';
-import { Table } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const mapCategoryIdToName = (categoryId) => {
+  switch (categoryId) {
+    case 1:
+      return 'Informatique';
+    case 2:
+      return 'Fournitures';
+    case 3:
+      return 'Communication';
+    default:
+      return 'Autre';
+  }
+};
+
 
 const FormVente = () => {
-  const articlesData = [
-    { id: 1, designation: "Iphone X", categorie: "Téléphones", quantite: 12, prix: "145000", magasin: "Magasin 1" },
-    { id: 2, designation: "Samsung Galaxy S21", categorie: "Téléphones", quantite: 8, prix: "135000", magasin: "Magasin 1" },
-    { id: 3, designation: "AirPods Pro", categorie: "Accessoires", quantite: 20, prix: "70000", magasin: "Magasin 3" },
-    { id: 4, designation: "Câble USB-C", categorie: "Connecteurs", quantite: 30, prix: "15000", magasin: "Magasin 1" },
-    { id: 5, designation: "Disque Dur Externe", categorie: "Stockages", quantite: 5, prix: "80000", magasin: "Magasin 3" },
-    { id: 6, designation: "Chargeur sans fil", categorie: "Accessoires", quantite: 15, prix: "35000", magasin: "Magasin 2" },
-    { id: 7, designation: "Casque Bluetooth", categorie: "Accessoires", quantite: 10, prix: "60000", magasin: "Magasin 2" },
-    { id: 8, designation: "Ordinateur portable", categorie: "Ordinateurs", quantite: 6, prix: "800000", magasin: "Magasin 2" },
-    { id: 9, designation: "Clavier sans fil", categorie: "Accessoires", quantite: 10, prix: "40000", magasin: "Magasin 2" },
-    { id: 10, designation: "Souris optique", categorie: "Accessoires", quantite: 15, prix: "25000", magasin: "Magasin 1" },
-    { id: 11, designation: "Imprimante laser", categorie: "Accessoires", quantite: 3, prix: "200000", magasin: "Magasin 3" },
-    { id: 12, designation: "Stylos", categorie: "Fournitures de bureau", quantite: 50, prix: "5000", magasin: "Magasin 3" },
-    { id: 13, designation: "Cahiers", categorie: "Fournitures de bureau", quantite: 30, prix: "3000", magasin: "Magasin 1" },
-    { id: 14, designation: "Agrafeuses", categorie: "Fournitures de bureau", quantite: 15, prix: "10000", magasin: "Magasin 3" },
-    // Ajoutez ici les informations des autres articles...
-  ];
+  const [articlesData, setArticlesData] = useState([]);
+const [articleDesignations, setArticleDesignations] = useState([]);
+const [selectedQuantity, setSelectedQuantity] = useState(1);
+const [selectedPrice, setSelectedPrice] = useState(0); // Ajout de l'état pour le prix de vente
+const [typeArticles, setTypeArticles] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [selectedClient, setSelectedClient] = useState(''); // Définir selectedClient
+  const [selectedSellingPrice, setSelectedSellingPrice] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(''); // Ajouter un état pour la date
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-  };
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/clients')
+      .then(response => {
+        console.log('Raw response:', response.data); // Vérifiez la réponse brute
+        setClients(response.data.clients);
+        console.log('Processed data:', clients); // Vérifiez les données après traitement
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des clients:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/type')
+      .then(response => {
+        setTypeArticles(response.data.typeArticles);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des types d\'articles :', error);
+      });
+  }, []);
+  
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/articles')
+      .then(response => {
+        const articlesData = response.data.articles;
+        const designations = articlesData.map(article => article.designation);
+        setArticlesData(articlesData); // Sauvegardez toutes les données des articles si nécessaire
+        setArticleDesignations(designations);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des désignations d\'articles:', error);
+      });
+  }, []);
+ 
 
   const [articles, setArticles] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState('');
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [remisePercentage, setRemisePercentage] = useState(0);
   const [tvaPercentage, setTvaPercentage] = useState(20);
 
   const handleArticleChange = (event) => {
     setSelectedArticle(event.target.value);
   };
-
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+  
+    // Calcul de la remise en fonction du montant avec remise et de la TVA
+    const remiseMontant = montantAvecRemise * (remisePercentage / 100);
+  
+    // Créez l'objet de données à envoyer au backend
+    const venteData = {
+      clientId: selectedClient,
+      articleData: articles.map((article) => ({
+        quantite: article.quantite,
+        articleId: article.id,
+        prixVente: article.prix, // Utilisation du prix de vente de l'article
+      })),
+  
+      tauxRemise: remiseMontant, // Utilisation du montant de la remise calculé
+      montantTVA: tva,
+      prixVente: selectedPrice,
+      dateVente: selectedDate,
+      montantTotal: montantTotalTTC,
+    };
+    
+    console.log(venteData);
+  
+    try {
+      // Envoyez les données au backend
+      const response = await axios.post('http://localhost:5001/api/ventes', venteData);
+      console.log('Réponse du serveur:', response.data);
+  
+      // Réinitialisez les états et les champs du formulaire après l'envoi
+      setSelectedClient('');
+      setArticles([]);
+      setSelectedArticle('');
+      setSelectedQuantity(1);
+      setSelectedPrice(0);
+      setRemisePercentage(0);
+      setTvaPercentage(20);
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi des données:', error);
+    }
+  };
   const handleQuantityChange = (event) => {
     setSelectedQuantity(parseInt(event.target.value));
   };
+  
+  const mapTypeArticleIdToName = (typeArticleId) => {
+    const typeArticle = typeArticles.find(type => type.id === typeArticleId);
+    return typeArticle ? typeArticle.nom : 'Inconnu';
+  };
+  
 
   const handleAddToTable = () => {
     if (selectedArticle && selectedQuantity > 0) {
-      const articleToAdd = articlesData.find((article) => article.designation === selectedArticle);
+      const articleToAdd = articlesData.find(
+        (article) => article.designation === selectedArticle
+      );
       if (articleToAdd) {
         setArticles((prevArticles) => [
           ...prevArticles,
-          { ...articleToAdd, quantite: selectedQuantity },
+          { ...articleToAdd, quantite: selectedQuantity, prix: selectedPrice } // Ajout du prix
         ]);
         setSelectedArticle('');
         setSelectedQuantity(1);
+        setSelectedPrice(0);
       }
     }
   };
+  
+  
+  const handleClientChange = (event) => {
+  setSelectedClient(event.target.value);
+  console.log(selectedClient)
+};
 
+  const handleRemoveFromTable = (articleId) => {
+    setArticles((prevArticles) =>
+      prevArticles.filter((article) => article.id !== articleId)
+    );
+  };
+  
   const handleRemiseChange = (event) => {
     setRemisePercentage(parseFloat(event.target.value));
   };
@@ -70,13 +166,20 @@ const FormVente = () => {
   const montantAvecRemise = montantHorsTaxe - remise;
   const tva = (montantAvecRemise * tvaPercentage) / 100;
   const montantTotalTTC = montantAvecRemise + tva;
+  const bouStyle = {
+    width: "27%" ,
+    marginLeft:"387px",
+    padding:"5px",
+    marginBottom:"10px"
+    };
+
 
   return (
     <div>
        <div className='content-header'>
        <h2 className='header'>Enregistrer une vente </h2>
      </div>
-      <form className="" onSubmit={handleFormSubmit}> {/* Add onSubmit event handler */}
+      <form className="" onSubmit={handleFormSubmit}>
         <div className="g-3 row">
           <div className="col-lg-12">
             <div className="mb-3 card">
@@ -84,99 +187,128 @@ const FormVente = () => {
                 <h6 className="bg-primary card-header" style={{color:'white'}}>Details client</h6>
                 <div className="card-body">
   <div className="gx-2 gy-3 row">
-    <div className="col-md-6">
-      <div className="d-flex align-items-center">
-        <label className="form-label" style={{color:'black'}}>Client:</label>
-        <select name="importStatus" className="form-select" style={{
-            width:'76%',
-            padding:'5px',
-            borderRadius:"5px",
-            marginLeft:"12px"
-          }}>
-          <option value="">Select</option>
-          <option value="imported">client 1</option>
-          <option value="processing">client 2</option>
-          <option value="validating">client 3</option>
-        </select>
-        <div className="invalid-feedback" />
-      </div>
-    </div>
-    <div className="col-md-6">
-      <div className="d-flex align-items-center">
-        <label className="form-label" style={{color:'black'}}>
-          Date :
-        </label>
-        <div className="react-datepicker__input-container" 
-         style={{marginLeft:'12px', width:'80%'}}
-          >
-          <input
-            type="date"
-            className="form-control"
-            defaultValue=""
-          />
+  <div className="col-md-6">
+        <div className="d-flex align-items-center">
+          <label className="form-label" style={{ color: 'black' }}>Client:</label>
+          <select
+  name="importStatus"
+  className="form-select"
+  value={selectedClient}
+  onChange={handleClientChange} 
+  style={{
+    width: '76%',
+    padding: '5px',
+    borderRadius: '5px',
+    marginLeft: '12px'
+  }}
+>
+  <option value="">Select</option>
+  {clients.map(client => (
+    <option key={client.id} value={client.id}>
+      {client.nom} {client.prenom}
+    </option>
+  ))}
+</select>
+
+
+
+          <div className="invalid-feedback" />
         </div>
       </div>
+      <div className="col-md-6">
+  <div className="d-flex align-items-center">
+    <label className="form-label" style={{color:'black'}}>
+      Date :
+    </label>
+    <div className="react-datepicker__input-container" 
+      style={{marginLeft:'12px', width:'80%'}}
+    >
+      <input
+        type="date"
+        className="form-control"
+        value={selectedDate} // Utiliser la valeur de l'état selectedDate
+        onChange={(event) => setSelectedDate(event.target.value)} // Mettre à jour l'état lorsque la date est sélectionnée
+      />
     </div>
+  </div>
+</div>
+
   </div>
 </div>
               </div>
               <div className="card-header bg-white d-flex justify-content-between align-items-center">
                 <h6 className="" style={{color:'#222'}}>Article information</h6>
-                <input type="submit" value="Ajouter " className="bouton" onClick={handleAddToTable} />
+                <input type="button" value="Ajouter " className="bouton" onClick={handleAddToTable} />
               </div>
               <div className="card-body">
   <div className="row gx-2 gy-3">
-    <div className="col-md-6">
+    <div className="col-md-4">
       <div className="d-flex align-items-center">
         <label className="form-label" style={{color:'#222'}}>Article :</label>
         <select
-          name="importStatus"
-          className="form-select"
-          value={selectedArticle}
-          onChange={handleArticleChange}
-          style={{
-            width:'80%',
-            padding:'5px',
-            borderRadius:"5px",
-            marginLeft:"12px"
-          }}
-        >
-          <option value="">Select</option>
-          {articlesData.map((article) => (
-            <option key={article.id} value={article.designation}>
-              {article.designation}
-            </option>
-          ))}
-        </select>
+
+  name="importStatus"
+  className="form-select"
+  value={selectedArticle}
+  onChange={handleArticleChange}
+  style={{
+    width: '60%',
+    padding: '5px',
+    borderRadius: '5px',
+    marginLeft: '12px'
+  }}
+>
+  <option value="">Select</option>
+  {articleDesignations.map((designation, index) => (
+    <option key={index} value={designation}>
+      {designation}
+    </option>
+  ))}
+</select>
+
         <div className="invalid-feedback" />
       </div>
     </div>
-    <div className="col-md-6">
-      <div className="d-flex align-items-center ">
-        <label className="form-label" style={{color:'black'}}>Quantité :</label>
-        <select
-          name="quantity"
-          className="form-select selectionne"
-          value={selectedQuantity}
-          onChange={handleQuantityChange}
-          style={{
-            width:'80%',
-            padding:'5px',
-            borderRadius:"5px",
-            marginLeft:"12px"
-          }}
-          
-        >
-          <option value="">Select</option>
-          {[...Array(10)].map((_, index) => (
-            <option key={index + 1} value={index + 1}>
-              {index + 1}
-            </option>
-          ))}
-        </select>
-        <div className="invalid-feedback" />
-      </div>
-    </div>
+    <div className="col-md-4">
+  <div className="d-flex align-items-center ">
+    <label className="form-label" style={{ color: 'black' }}>
+      Quantité :
+    </label>
+    <input
+      type="number"
+      className="form-control"
+      value={selectedQuantity}
+      onChange={handleQuantityChange}
+      style={{
+        width: '60%',
+        padding: '5px',
+        borderRadius: '5px',
+        marginLeft: '12px'
+      }}
+    />
+  </div>
+</div>
+<div className="col-md-4">
+  <div className="d-flex align-items-center">
+    <label className="form-label" style={{ color: 'black' }}>
+      Prix de vente :
+    </label>
+    <input
+      type="number"
+      className="form-control"
+      value={selectedPrice}
+      onChange={(event) => setSelectedPrice(parseFloat(event.target.value))}
+      style={{
+        width: '60%',
+        padding: '5px',
+        borderRadius: '5px',
+        marginLeft: '12px'
+      }}
+    />
+  </div>
+</div>
+
+
   </div>
 </div>
 
@@ -200,10 +332,12 @@ const FormVente = () => {
                 <td>{article.quantite}</td>
                 <td>{article.prix} Fcfa</td>
                 <td>{(parseFloat(article.prix) * article.quantite).toFixed(2)} Fcfa</td>
-                <td>{article.magasin}</td>
-                <td>{article.categorie}</td>
+                <td>{mapTypeArticleIdToName(article.typeArticleId)}</td>
+                <td>{mapCategoryIdToName(article.categorieId)}</td> {/* Utilisation de la fonction ici */}
                 <td className="text-end d-flex align-items-center justify-content-space-around">
-                  <i className="fas fa-trash-alt" style={{ marginLeft: '10px', cursor: 'pointer' }}></i>
+                  <i className="fas fa-trash-alt"
+                  style={{ marginLeft: '10px', cursor: 'pointer' }}
+                  onClick={() => handleRemoveFromTable(article.id)}></i>
                   {/* Icône de suppression */}
                   <i className="fas fa-edit" style={{ marginLeft: '20px', cursor: 'pointer' }}></i>
                   {/* Icône de modification */}
@@ -268,6 +402,9 @@ const FormVente = () => {
             
             </div>
         </div>
+        <button type="submit" className="bouton" style={bouStyle}>
+  Enregistrer
+</button>
       </form>
     </div>
   );

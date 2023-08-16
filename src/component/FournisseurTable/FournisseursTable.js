@@ -1,38 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const FournisseursTable = () => {
-    const fournisseurs = [
-        {
-          nom: 'Dupont',
-          prenom: 'Jean',
-          email: 'jean.dupont@example.com',
-          contact: '+33 6 12 34 56 78',
-          localisation: 'Paris, France',
-        },
-        {
-          nom: 'Martin',
-          prenom: 'Sophie',
-          email: 'sophie.martin@example.com',
-          contact: '+33 6 98 76 54 32',
-          localisation: 'Lyon, France',
-        },
-        // Ajoutez d'autres fournisseurs si nécessaire
-      ];
-    
-      const theadStyle = {
-        backgroundColor: '#4e73df',
-        color: '#ffffff',
-      };
-
+  const [fournisseurs, setFournisseurs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredFournisseurs, setFilteredFournisseurs] = useState(fournisseurs);
+  const [filteredFournisseurs, setFilteredFournisseurs] = useState([]);
+
+  const theadStyle = {
+    backgroundColor: '#4e73df',
+    color: '#ffffff',
+  };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
   const handleSearchSubmit = () => {
-    // Filtrer les fournisseurs en fonction de la recherche
     const filtered = fournisseurs.filter(
       (fournisseur) =>
         fournisseur.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,13 +28,31 @@ const FournisseursTable = () => {
     setFilteredFournisseurs(filtered);
   };
 
+  useEffect(() => {
+    // Effectuez la requête GET pour récupérer les données des fournisseurs
+    axios.get('http://localhost:5001/api/fournisseur')
+      .then(response => {
+        setFournisseurs(response.data.fournisseurs);
+        setFilteredFournisseurs(response.data.fournisseurs);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des fournisseurs :', error);
+      });
+  }, []);
+
   return (
     <div>
       <div className='content-header'>
         <h2 className='header'>Base des fournisseurs </h2>
       </div>
       <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
-      <input type="submit" value="Ajouter " className="bouton" />
+      <Link to="/formFournisseur" className=" bouton text-center"
+      style={{listStyle:"none",
+              textDecoration:"none",
+         }}
+      >
+        Ajouter
+      </Link>
           <div className="input-group" style={{ width: '50%' }}>
             <input
               type="text"

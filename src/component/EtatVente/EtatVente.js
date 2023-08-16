@@ -1,30 +1,42 @@
 import { faCheck, faHourglass, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
 import './EtatVente.css'
-import AchatTable from '../AchatTable/AchatTable';
-import ResponsiveTable from '../ResponsiveTable/ResponsiveTable';
 import VenteTable from '../VenteTable/VenteTable';
-
+import axios from 'axios';
 const EtatVente = () => {
-    
-    const fournisseurs = [
-        {
-          nom: 'Dupont',
-          prenom: 'Jean',
-          email: 'jean.dupont@example.com',
-          contact: '+33 6 12 34 56 78',
-          localisation: 'Paris, France',
-        },
-        {
-          nom: 'Martin',
-          prenom: 'Sophie',
-          email: 'sophie.martin@example.com',
-          contact: '+33 6 98 76 54 32',
-          localisation: 'Lyon, France',
-        },
-        // Ajoutez d'autres fournisseurs si nécessaire
-      ];
+  const [totalVentes, setTotalVentes] = useState(0);
+  const [ventesDuJour, setVentesDuJour] = useState(0);
+  const [ventesDeLaSemaine, setVentesDeLaSemaine] = useState(0);
+  const [clients, setClients] = useState([]);
+
+  useEffect(() => {
+    const fetchVentes = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/ventes');
+        const ventes = response.data.ventes;
+
+        const totalVentes = ventes.length;
+        setTotalVentes(totalVentes);
+
+        const dateDuJour = new Date().toISOString().split('T')[0];
+        const ventesJour = ventes.filter(vente => vente.dateVente === dateDuJour);
+        setVentesDuJour(ventesJour.length);
+
+        const dateActuelle = new Date();
+        const debutSemaine = new Date(dateActuelle.getFullYear(), dateActuelle.getMonth(), dateActuelle.getDate() - dateActuelle.getDay());
+        const ventesSemaine = ventes.filter(vente => new Date(vente.dateVente) >= debutSemaine);
+        setVentesDeLaSemaine(ventesSemaine.length);
+
+        const clientsIds = new Set(ventes.map(vente => vente.clientId));
+        setClients(Array.from(clientsIds));
+      } catch (error) {
+        console.error('Erreur lors de la récupération des ventes:', error);
+      }
+    };
+
+    fetchVentes();
+  }, []);
   return (
     <section>
 <header className="page-header page-header-dark bg-gradient-primary-to-secondary pb-10 full-width-header entete">
@@ -81,10 +93,8 @@ const EtatVente = () => {
             </div>
           </div>
           <div>
-            <h3 className="fw-bold">18</h3>
-            <p className="mb-0">
-              <span classname="text-dark me-2">22%</span> Completed
-            </p>
+            <h3 className="fw-bold">{totalVentes}</h3>
+            
           </div>
         </div>
       </div>
@@ -94,17 +104,15 @@ const EtatVente = () => {
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h4 className="mb-0">vente en cours </h4>
+              <h4 className="mb-0">Vente du jour </h4>
             </div>
             <div className="icon-shape icon-md bg-light-primary text-primary rounded-2">
                 <FontAwesomeIcon icon={faHourglass} />
             </div>
           </div>
           <div>
-            <h3 className="fw-bold">12</h3>
-            <p className="mb-0">
-              <span classname="text-dark me-2">20%</span> Completed
-            </p>
+            <h3 className="fw-bold">{ventesDuJour}</h3>
+
           </div>
         </div>
       </div>
@@ -114,17 +122,14 @@ const EtatVente = () => {
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h4 className="mb-0">Vente annules</h4>
+              <h4 className="mb-0">Vente semaine</h4>
             </div>
             <div className="icon-shape icon-md bg-light-primary text-primary rounded-2">
             <FontAwesomeIcon icon={faXmark} />
             </div>
           </div>
           <div>
-            <h3 className="fw-bold">10</h3>
-            <p className="mb-0">
-              <span classname="text-dark me-2">5%</span> avance
-            </p>
+            <h3 className="fw-bold">{ventesDeLaSemaine}</h3>
           </div>
         </div>
       </div>
@@ -134,7 +139,7 @@ const EtatVente = () => {
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
-              <h4 className="mb-0">Vente effectue</h4>
+              <h4 className="mb-0">Clients</h4>
             </div>
             <div className="icon-shape icon-md bg-light-primary text-primary rounded-2">
             <FontAwesomeIcon icon={faCheck} />
@@ -142,16 +147,13 @@ const EtatVente = () => {
             </div>
           </div>
           <div>
-            <h3 className="fw-bold">10</h3>
-            <p className="mb-0">
-              <span classname="text-dark me-2">5%</span> Completed
-            </p>
+            <h3 className="fw-bold">{clients.length}</h3>
+           
           </div>
         </div>
       </div>
     </div>
   </div>
-  <ResponsiveTable />
   <VenteTable  />
 </section>
   )

@@ -1,18 +1,86 @@
-import React from 'react'
-import './Facture.css'
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import './Facture.css';
+import { format, parseISO } from 'date-fns';
+
+
+const formatNumeroFacture = (id) => {
+  return `FACT-${id.toString().padStart(3, '0')}`;
+};
+
 const Facture = () => {
-  return (
+  const { achatId } = useParams();
+  const [achatDetails, setAchatDetails] = useState([]);
+  const [articleMap, setArticleMap] = useState({}); // Tableau pour stocker les articles par ID
+  const [numFacture, setNumFacture] = useState('');
+
+
+  useEffect(() => {
+    // Récupérer les détails de l'achat depuis votre API en utilisant achatId
+    axios.get(`http://localhost:5001/api/achats/${achatId}`)
+      .then(response => {
+        setAchatDetails(response.data); 
+        console.log(response.data)// Mettre à jour les détails de l'achat
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des détails de l\'achat:', error);
+      });
+       // Récupérer les données des articles depuis votre API
+    const fetchArticles = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/articles');
+        const articles = response.data.articles;
+   console.log(articles)
+
+        // Créer un objet de mappage des articles par ID
+        const articleMap = {};
+        for (const article of articles) {
+          articleMap[article.id] = article;
+        }
+
+        setArticleMap(articleMap);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des articles:', error);
+      }
+    };
+
+    fetchArticles();
+  }, [achatId]);
+
+  useEffect(() => {
+    if (achatDetails.length !== 0) {
+      const numeroFacture = formatNumeroFacture(achatId);
+      setNumFacture(numeroFacture);
+    }
+  }, [achatDetails, achatId]);
+
+  if (achatDetails.length === 0) {
+    return <div>Chargement en cours...</div>;
+  }
+  
+
+  // Extraire les informations du fournisseur
+  const fournisseur = achatDetails.achat.fournisseur;
+  const nomFournisseur = fournisseur.nom;
+  const emailFournisseur = fournisseur.email;
+  const localisationFournisseur = fournisseur.localisation;
+  const achatArticles = achatDetails.achat.achatArticles;
+  const articlesData = achatDetails.achat.articlesData;
+    return (
     <div className="cs-container">
   <div className="cs-invoice cs-style1">
     <div className="cs-invoice_in" id="download_section">
       <div className="cs-invoice_head cs-type1 cs-mb25">
         <div className="cs-invoice_left">
           <p className="cs-invoice_number cs-primary_color cs-mb5 cs-f16">
-            <b className="cs-primary_color">Facture  No:</b> #1212
+            <b className="cs-primary_color">Facture  No:</b> #{numFacture}
           </p>
           <p className="cs-invoice_date cs-primary_color cs-m0">
-            <b className="cs-primary_color">Date: </b>18.07.2023
-          </p>
+  <b className="cs-primary_color">Date: </b>
+  {achatDetails.dateAchat}
+</p>
+
         </div>
         <div className="cs-invoice_right cs-text_right">
           <div className="cs-logo cs-mb5">
@@ -33,9 +101,9 @@ const Facture = () => {
         <div className="cs-invoice_right cs-text_right">
           <b className="cs-primary_color">Addresse a:</b>
           <p>
-            COIC <br />
-            Abidjan <br />
-            Cocody, Cote D'ivoire <br />
+          {nomFournisseur} <br />
+          {localisationFournisseur} <br />
+          {emailFournisseur}
           </p>
         </div>
       </div>
@@ -63,26 +131,40 @@ const Facture = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="cs-width_3">LENOVO mini PC bureau ,Unité Centrale Thinkcentre M80Q </td>
-                  <td className="cs-width_4">
-                  RAM 16 GB, Disque 256 SSD  &amp; Ecran 22 pouces
+  {articlesData.map((articleData, index) => {
+    const article = articleMap[articleData.articleId];
+    console.log("Article Data:", articleData);
+    console.log("Article:", article);
 
-                  </td>
-                  <td className="cs-width_2">2</td>
-                  <td className="cs-width_1">490.000</td>
-                  <td className="cs-width_2 cs-text_right">980.000</td>
-                </tr>
-                <tr>
-                  <td className="cs-width_3">Ordinateur Bureau HP 200G4</td>
-                  <td className="cs-width_4">
-                  Core i3, Ram 4, &amp;  128SSD, 1 Téra SATA 
-                  </td>
-                  <td className="cs-width_2">5</td>
-                  <td className="cs-width_1">450.000 </td>
-                  <td className="cs-width_2 cs-text_right">2.250.000</td>
-                </tr>
-              </tbody>
+    if (!article) {
+      console.log("Article not found for ID:", articleData.articleId);
+      return null; // Article non trouvé dans la liste des articles
+    }
+
+    return (
+      <tr key={index}>
+        <td className="cs-width_3">
+          {article.designation}
+        </td>
+        <td className="cs-width_4">
+          {article.caracteristique}
+        </td>
+        <td className="cs-width_2">
+          {articleData.quantite}
+        </td>
+        <td className="cs-width_1">
+        {articleData.prix} {/* Utilisez le prix d'achat de l'article */}
+        </td>
+        <td className="cs-width_2 cs-text_right">
+          {/* Calculer le prix total TTC en multipliant la quantité par le prix d'achat */}
+          {articleData.quantite * articleData.prix}
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
+
             </table>
           </div>
           
@@ -104,7 +186,7 @@ const Facture = () => {
                      Total TTC 
                     </td>
                     <td className="cs-width_3 cs-semi_bold cs-focus_bg cs-primary_color cs-text_right">
-                     3.230.000
+                   
                     </td>
                   </tr>
                   <tr className="cs-border_left">
@@ -112,7 +194,7 @@ const Facture = () => {
                     Remise
                     </td>
                     <td className="cs-width_3 cs-semi_bold cs-focus_bg cs-primary_color cs-text_right">
-                    130.000     
+                    {achatDetails.achat.tauxRemise} Fcfa    
                     </td>
                   </tr>
                   <tr className="cs-border_left">
@@ -120,7 +202,7 @@ const Facture = () => {
                     Montant Net Total TTC
                     </td>
                     <td className="cs-width_3 cs-semi_bold cs-focus_bg cs-primary_color cs-text_right">
-                    3.100.000    
+                    {achatDetails.achat.montantTotal}   Fcfa
                     </td>
                   </tr>
                 </tbody>

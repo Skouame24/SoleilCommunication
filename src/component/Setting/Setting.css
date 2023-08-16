@@ -1,0 +1,33 @@
+.custom-card {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    margin: 0;
+    opacity: 1;
+    background: white; /* Changer la couleur du fond ici */
+    color: rgb(52, 71, 103);
+    border: none; /* Supprimer la bordure si nécessaire */
+    box-shadow: none; /* Ajoute le box-shadow none */
+    list-style: none;
+  }
+  
+  .custom-list {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .custom-list li {
+    padding: 12px 0; /* Ajoute un peu d'espacement vertical entre les éléments li */
+    border: none; /* Supprime la bordure */
+    cursor: pointer; /* Ajoute un curseur pointer au survol */
+    display: flex;
+    align-items: center; /* Aligne le contenu verticalement */
+  }
+  
+
+  
+  .custom-list li::before {
+    content: "\2022"; /* Ajoute un point comme puce */
+    margin-right: 8px; /* Espacement entre l'icône et le texte */
+  }
+  

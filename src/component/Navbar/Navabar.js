@@ -1,7 +1,17 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'; // Importez le composant Link
+import { Link, redirect } from 'react-router-dom'; // Importez le composant Link
 
-const Navabar = () => {
+const Navabar = ({userData}) => {
+    const [redirect, setRedirect] = useState(false);
+
+    const handleLogout = () => {
+        // Supprimer le jeton d'accès du localStorage
+        localStorage.removeItem('token');
+        // Actualiser la page pour appliquer la déconnexion
+        window.location.href = '/'
+      };
+      
+
     const [style, setStyle] = useState("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion");
 
     const changeStyle = () => {
@@ -130,30 +140,30 @@ const Navabar = () => {
                                     <li className="nav-item dropdown no-arrow">
                                         <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span className="mr-2 d-none d-lg-inline text-gray-600 small">Silue  Karim</span>
+                                            <span className="mr-2 d-none d-lg-inline text-gray-600 small">{userData.prenom}  {userData.nom}</span>
                                             <img className="img-profile rounded-circle"
                                                 src="img/undraw_profile.svg" />
                                         </a>
                                         {/*  <!-- Dropdown - User Information --> */}
                                         <div className="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                             aria-labelledby="userDropdown">
-                                            <a className="dropdown-item" href="#">
+                                            <Link to="/setting" className="dropdown-item" href="#">
                                                 <i className="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                                 Profile
-                                            </a>
-                                            <a className="dropdown-item" href="#">
+                                            </Link>
+                                            <Link to="/setting" className="dropdown-item" >
                                                 <i className="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                                                 Parametre
-                                            </a>
+                                            </Link>
                                             <Link to="finance" className="dropdown-item" >
                                                 <i className="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                                                 Voir les finances
                                             </Link>
                                             <div className="dropdown-divider"></div>
-                                            <a className="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                            <Link className="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal" onClick={handleLogout}>
                                                 <i className="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                                 Logout
-                                            </a>
+                                            </Link>
                                         </div>
                                     </li>
 

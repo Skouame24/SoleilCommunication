@@ -1,50 +1,30 @@
-import React ,{useState} from 'react'
-import './Directe.css'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './Directe.css';
+
 const Directe = () => {
-    const [articles, setArticles] = React.useState([
-        {
-          designation: 'iPhone 11 Pro',
-          caracteristiques: '200GB, 2GB RAM, couleur noir',
-          quantite: 10,
-          magasin: 'Apple Store',
-          dateEntree: '2023-07-28',
-        },
-        {
-          designation: 'Samsung Galaxy S21',
-          caracteristiques: '128GB, 8GB RAM, couleur violet',
-          quantite: 15,
-          magasin: 'Samsung Store',
-          dateEntree: '2023-07-27',
-        },
-        {
-          designation: 'HP Pavilion Laptop',
-          caracteristiques: '512GB SSD, 16GB RAM, processeur Intel i7',
-          quantite: 5,
-          magasin: 'HP Store',
-          dateEntree: '2023-07-26',
-        },
-        {
-          designation: 'Dell XPS 13',
-          caracteristiques: '256GB SSD, 8GB RAM, processeur Intel i5',
-          quantite: 8,
-          magasin: 'Dell Store',
-          dateEntree: '2023-07-25',
-        },
-        {
-          designation: 'Lenovo ThinkPad',
-          caracteristiques: '1TB SSD, 32GB RAM, processeur AMD Ryzen',
-          quantite: 12,
-          magasin: 'Lenovo Store',
-          dateEntree: '2023-07-24',
-        },
-        {
-            designation: 'Lenovo ThinkPad',
-            caracteristiques: '1TB SSD, 32GB RAM, processeur AMD Ryzen',
-            quantite: 12,
-            magasin: 'Lenovo Store',
-            dateEntree: '2023-07-24',
-          },
-      ]);
+  const [articles, setArticles] = useState([]);
+
+
+  useEffect(() => {
+    // Récupérer la liste de tous les articles depuis votre API
+    const fetchArticles = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/articles');
+        const allArticles = response.data.articles;
+
+        // Filtrer les articles où l'entrée est directe (entreeDirecte est true)
+        const directEntryArticles = allArticles.filter(article => article.entreeDirecte);
+
+        setArticles(directEntryArticles);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des articles:', error);
+      }
+    };
+
+    fetchArticles();
+  }, []);
+
       const itemsPerPage = 4;
 
   // État pour gérer la page actuelle
@@ -110,17 +90,17 @@ const Directe = () => {
                   <th scope="col">Designation</th>
                   <th scope="col">Caractéristiques</th>
                   <th scope="col">Quantité</th>
-                  <th scope="col">Nom du magasin</th>
+                  <th scope="col">Type article</th>
                 </tr>
               </thead>
               <tbody>
                 {displayedArticles.map((article, index) => (
                   <tr key={index}>
-                    <td>{article.dateEntree}</td>
+      <td>{new Date(article.createdAt).toLocaleDateString()}</td>
                     <td>{article.designation}</td>
-                    <td>{article.caracteristiques}</td>
+                    <td>{article.caracteristique}</td>
                     <td>{article.quantite}</td>
-                    <td>{article.magasin}</td>
+                    <td>{article.typeArticleId}</td>
                   </tr>
                 ))}
               </tbody>

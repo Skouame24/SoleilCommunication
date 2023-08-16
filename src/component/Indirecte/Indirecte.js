@@ -1,79 +1,96 @@
-import React, {useState} from 'react';
-import './Indirecte.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Indirecte = () => {
-    const articles = [
-      {
-        designation: 'iPhone 11 Pro',
-        caracteristiques: '200GB, 2GB RAM, couleur noir',
-        quantite: 10,
-        magasin: 'Apple Store',
-        dateEntree: '2023-07-28',
-        nomFournisseur: 'Apple Inc.',
-      },
-      {
-        designation: 'Samsung Galaxy S21',
-        caracteristiques: '128GB, 8GB RAM, couleur violet',
-        quantite: 15,
-        magasin: 'Samsung Store',
-        dateEntree: '2023-07-27',
-        nomFournisseur: 'Samsung Electronics',
-      },
-      {
-        designation: 'HP Pavilion Laptop',
-        caracteristiques: '512GB SSD, 16GB RAM, processeur Intel i7',
-        quantite: 5,
-        magasin: 'HP Store',
-        dateEntree: '2023-07-26',
-        nomFournisseur: 'HP Inc.',
-      },
-      {
-        designation: 'Dell XPS 13',
-        caracteristiques: '256GB SSD, 8GB RAM, processeur Intel i5',
-        quantite: 8,
-        magasin: 'Dell Store',
-        dateEntree: '2023-07-25',
-        nomFournisseur: 'Dell Technologies',
-      },
-      {
-        designation: 'Lenovo ThinkPad',
-        caracteristiques: '1TB SSD, 32GB RAM, processeur AMD Ryzen',
-        quantite: 12,
-        magasin: 'Lenovo Store',
-        dateEntree: '2023-07-24',
-        nomFournisseur: 'Lenovo Group Limited',
-      },
-      {
-        designation: 'Lenovo ThinkPad',
-        caracteristiques: '1TB SSD, 32GB RAM, processeur AMD Ryzen',
-        quantite: 12,
-        magasin: 'Lenovo Store',
-        dateEntree: '2023-07-24',
-        nomFournisseur: 'Lenovo Group Limited',
-      },
-    ];
-
-    const itemsPerPage = 4;
-
-  // État pour gérer la page actuelle
+  const [achats, setAchats] = useState([]);
+  const [fournisseurMap, setFournisseurMap] = useState({});
+  const [articleMap, setArticleMap] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [achatsDetails, setAchatsDetails] = useState({});
 
-  // Calcul du nombre total de pages
-  const totalPages = Math.ceil(articles.length / itemsPerPage);
 
-  // Fonction pour changer de page
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/achats')
+      .then(response => {
+        setAchats(response.data.achats);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des achats:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    const fetchFournisseurs = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/fournisseur');
+        const fournisseurs = response.data.fournisseurs;
+  
+        const fournisseurMap = {};
+        for (const fournisseur of fournisseurs) {
+          fournisseurMap[fournisseur.id] = fournisseur.nom;
+        }
+        
+        setFournisseurMap(fournisseurMap);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des fournisseurs:', error);
+      }
+    };
+  
+    fetchFournisseurs();
+  }, []);
+  
+  useEffect(() => {
+    const articleIdsAchats = achats.flatMap(achat => {
+      console.log('achat:', achat); // Vérifier la structure de l'achat
+      const articleData = achat.articlesData || [];
+      return articleData.map(article => {
+        console.log('article:', article); // Vérifier la structure de l'articleData
+        return article.articleId !== undefined ? article.articleId : null;
+      });
+    }).filter(articleId => articleId !== null); // Supprimer les valeurs null
+  
+    console.log('articleIdsAchats:', articleIdsAchats); // Vérifier les articleId extraits
+  
+    const uniqueArticleIdsAchats = [...new Set(articleIdsAchats)];
+  
+    const fetchAchatsDetails = async () => {
+      const achatsDetailsData = {};
+      for (const articleId of uniqueArticleIdsAchats) {
+        try {
+          const response = await axios.get(`http://localhost:5001/api/articles/${articleId}`);
+          achatsDetailsData[articleId] = response.data;
+          console.log(achatsDetailsData[articleId])
+        } catch (error) {
+          console.error(`Erreur lors de la récupération des détails de l'article d'achat ${articleId} :`, error);
+        }
+      }
+      setAchatsDetails(achatsDetailsData);
+    };
+  
+    if (uniqueArticleIdsAchats.length > 0) {
+      fetchAchatsDetails();
+    }
+  }, [achats]);
+  
+
+  const itemsPerPage = 4;
+  const threshold = 4;
+
+  const totalPages = Math.ceil(achats.length / itemsPerPage);
+
   const changePage = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  // Index de début et de fin des articles affichés sur la page actuelle
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, articles.length);
+  const endIndex = Math.min(startIndex + itemsPerPage, achats.length);
+  const displayedAchats = achats.slice(startIndex, endIndex);
 
-  // Articles à afficher sur la page actuelle
-  const displayedArticles = articles.slice(startIndex, endIndex);
+  const theadStyle = {
+    backgroundColor: '#4e73df',
+    color: '#ffffff',
+  };
 
-  // Générer les boutons de pagination
   const paginationButtons = [];
   for (let i = 1; i <= totalPages; i++) {
     paginationButtons.push(
@@ -85,18 +102,11 @@ const Indirecte = () => {
     );
   }
 
-  // Nombre d'articles à partir duquel afficher la pagination
-  const threshold = 4;
-    const theadStyle = {
-        backgroundColor: '#4e73df',
-        color: '#ffffff',
-      };
-    
   return (
     <div>
-<section className='Commande'>
-      <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
-      <input type="submit" value="Ajouter " className="bouton" />
+      <section className='Commande'>
+        <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
+          <input type="submit" value="Ajouter " className="bouton" />
           <div className="input-group" style={{ width: '50%' }}>
             <input
               type="text"
@@ -113,46 +123,65 @@ const Indirecte = () => {
         </div> 
         <div className="py-0 card-body">
           <div className="table-responsive">
-            <table className="table table-striped table-hover ">
+            <table className="table table-striped table-hover">
               <thead style={theadStyle}>
                 <tr>
-                  <th scope="col">Date </th>
+                  <th scope="col">Date achat</th>
                   <th scope="col">Designation</th>
                   <th scope="col">Caractéristiques</th>
                   <th scope="col">Quantité</th>
-                  <th scope="col"> magasin</th>
+                  <th scope="col">type Id </th>
                   <th scope="col">Fournisseur</th>
-
                 </tr>
               </thead>
               <tbody>
-                {articles.map((article, index) => (
-                  <tr key={index}>
-                    <td>{article.dateEntree}</td>
-                    <td>{article.designation}</td>
-                    <td>{article.caracteristiques}</td>
-                    <td>{article.quantite}</td>
-                    <td>{article.magasin}</td>
-                    <td>{article.nomFournisseur}</td>
-                  </tr>
-                ))}
-              </tbody>
+  {displayedAchats.map((achat, index) => (
+    <tr key={index}>
+      <td>{new Date(achat.dateAchat).toLocaleDateString()}</td>
+      <td>
+        {achat.articlesData.map((article, articleIndex) => (
+          <div key={articleIndex}>
+            <p>{article.designation}</p>
+          </div>
+        ))}
+      </td>
+      <td>
+        {achat.articlesData.map((article, articleIndex) => (
+          <div key={articleIndex}>
+            <p>{article.caracteristique}</p>
+          </div>
+        ))}
+      </td>
+      <td>
+        {achat.articlesData.map((article, articleIndex) => (
+          <div key={articleIndex}>
+            <p>{article.quantite}</p>
+          </div>
+        ))}
+      </td>
+      <td>
+        {achat.articlesData.map((article, articleIndex) => (
+          <div key={articleIndex}>
+            <p>{article.typeArticleId
+}</p>
+          </div>
+        ))}
+      </td>
+      <td>{fournisseurMap[achat.fournisseurId]}</td>
+    </tr>
+  ))}
+</tbody>
+
             </table>
           </div>
         </div>
       </section>
-      {articles.length > threshold && (
+      {achats.length > threshold && (
         <div className="card-footer">
           <div className="d-flex justify-content-center align-items-center">
-            <button type="button" className="btn btn-falcon-default btn-sm">
-              {/* Bouton de navigation vers la page précédente */}
-            </button>
             <ul className="pagination mb-0 mx-2">
               {paginationButtons}
             </ul>
-            <button type="button" className="disabled btn btn-falcon-default btn-sm">
-              {/* Bouton de navigation vers la page suivante */}
-            </button>
           </div>
         </div>
       )}

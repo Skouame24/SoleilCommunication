@@ -1,138 +1,170 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const CreateArticle = () => {
+  const [designation, setDesignation] = useState('');
+  const [caracteristique, setCaracteristique] = useState('');
+  const [quantite, setQuantite] = useState('');
+  const [categorie, setCategorie] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [types, setTypes] = useState([]);
+  const [type, setType] = useState('');
+
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/categories')
+      .then(response => {
+        setCategories(response.data.categories);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des catégories :', error);
+      });
+
+    axios.get('http://localhost:5001/api/type')
+      .then(response => {
+        setTypes(response.data.typeArticles);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des types d\'articles :', error);
+      });
+
+  }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Construire l'objet de données à envoyer au backend
+    const requestData = {
+      designation,
+      caracteristique,
+      quantite,
+      entreeDirecte: true,
+      entreeIndirecte: false,
+      sortieDirecte: false,
+      sortieIndirecte: false,
+      prixAchat: null, // Définir le prix d'achat à null pour une entrée directe
+      boutiqueId: 1, // Remplacez par l'ID de la boutique
+      categorieId: parseInt(categorie), // Convertir en nombre
+      typeArticleId: parseInt(type), // Convertir en nombre
+    };
+    console.log(requestData)
+
+    // Envoyez les données au serveur ici (utilisez l'URL appropriée)
+    axios.post('http://localhost:5001/api/articles', requestData)
+      .then(response => {
+        // Réinitialiser les champs après la soumission réussie
+        setDesignation('');
+        setCaracteristique('');
+        setQuantite('');
+        setCategorie('');
+        setType('');
+      })
+      .catch(error => {
+        console.error('Erreur lors de l\'envoi des données :', error);
+        // Gérer les erreurs ici si nécessaire
+      });
+  };
+
   return (
     <div>
-      <div className='content-header' style={{marginBottom:"9px"}}>
-       <h2 className='header' style={{marginLeft:"129px"}}>Formulaire d'enregistrement d'un article </h2>
-     </div>
-      <form className="">
-  <div className="g-3 row" >
-    <div className="col-12" style={{marginBottom:'10px'}}>
-    </div>
-    <div className="col-lg-8">
-      <div className="mb-3 card">
-        <h6 className="bg-light card-header">Basic information</h6>
-        <div className="card-body">
-          <div className="gx-2 gy-3 row">
-            <div className="col-md-12">
-              <div>
-                <label className="form-label">Designation </label>
-                <input
-                  name="productName"
-                  type="text"
-                  className="form-control"
-                />
-                <div className="invalid-feedback" />
-              </div>
-            </div>
-            <div className="col-md-12">
-              <div>
-                <label className="form-label">Caracteristique :</label>
-                <input
-                  name="manufacturarName"
-                  type="text"
-                  className="form-control"
-                />
-                <div className="invalid-feedback" />
-              </div>
-            </div>
-            <div className="col-md-12">
-              <div>
-                <label className="form-label">Date:</label>
-                <input
-                  name="productSummery"
-                  type="text"
-                  className="form-control"
-                />
-                <div className="invalid-feedback" />
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className='content-header' style={{ marginBottom: "9px" }}>
+        <h2 className='header' style={{ marginLeft: "129px" }}>Formulaire d'enregistrement d'un article </h2>
       </div>
-    </div>
-    <div className="col-lg-4">
-      <div className="sticky-sidebar">
-        <div className="mb-3 card">
-          <h6 className="bg-light card-header">Categorie</h6>
-          <div className="card-body">
-            <div className="gx-2 gy-3 row">
-              <div className="col-md-12">
-                <div>
-                  <label className="form-label">Select category:</label>
-                  <select name="productCategory" className="form-select">
-                    <option value="">Select</option>
-                    <option value="electronics">Smartphones</option>
-                    <option value="homeKitchen">Accessoires</option>
-                    <option value="fashionApparel">Connecteurs</option>
-                    <option value="stationery">Stockages</option>
-                    <option value="healthFitness">Autres</option>
-                  </select>
-                  <div className="invalid-feedback" />
+      <form onSubmit={handleSubmit}>
+        <div className="g-3 row">
+          <div className="col-xl-12">
+            <div className="card mb-4">
+              <div className="card-header">Details Article</div>
+              <div className="card-body">
+                <div className="mb-3">
+                  <label className="small mb-1" htmlFor="inputDesignation">
+                    Designation
+                  </label>
+                  <input
+                    className="form-control"
+                    id="inputDesignation"
+                    type="text"
+                    value={designation}
+                    onChange={(e) => setDesignation(e.target.value)}
+                    placeholder="Entrer la désignation"
+                    required
+                  />
                 </div>
+                <div className="row gx-3 mb-3">
+                  <div className="col-md-6">
+                    <label className="small mb-1" htmlFor="inputCaracteristique">
+                      Caracteristique
+                    </label>
+                    <input
+                      className="form-control"
+                      id="inputCaracteristique"
+                      type="text"
+                      value={caracteristique}
+                      onChange={(e) => setCaracteristique(e.target.value)}
+                      placeholder="Entrer la caractéristique"
+                      required
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label className="small mb-1" htmlFor="inputQuantite">
+                      Quantite
+                    </label>
+                    <input
+                      className="form-control"
+                      id="inputQuantite"
+                      type="number"
+                      value={quantite}
+                      onChange={(e) => setQuantite(e.target.value)}
+                      placeholder="Entrer la quantité"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="row gx-3 mb-3">
+                  <div className="col-md-6">
+                    <label className="small mb-1" htmlFor="inputCategorie">
+                      Select Categorie
+                    </label>
+                    <select
+                      className="form-control"
+                      id="inputCategorie"
+                      value={categorie}
+                      onChange={(e) => setCategorie(e.target.value)}
+                      required
+                    >
+                      <option value="" disabled>Choisissez une catégorie</option>
+                      {categories.map(category => (
+                        <option key={category.id} value={category.id}>{category.nom}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="small mb-1" htmlFor="inputType">
+                      Type d'article
+                    </label>
+                    <select
+                      className="form-control"
+                      id="inputType"
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
+                      required
+                    >
+                      <option value="" disabled>Choisissez un type d'article</option>
+                      {types.map(articleType => (
+                        <option key={articleType.id} value={articleType.id}>{articleType.nom}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <button className="bouton" type="submit">
+                  Save
+                </button>
               </div>
             </div>
           </div>
         </div>
-        <div className="mb-3 card">
-          <h6 className="bg-light card-header">Magasin status</h6>
-          <div className="card-body">
-            <div className="mb-2 form-check">
-              <input
-                name="stock"
-                type="radio"
-                id="inStock"
-                className="p-2 form-check-input"
-                defaultValue="inStock"
-                defaultChecked=""
-              />
-              <label
-                htmlFor="inStock"
-                className="form-check-label fs-0 fw-normal text-700 form-check-label"
-              >
-                Magasin 1
-              </label>
-            </div>
-            <div className="mb-2 form-check">
-              <input
-                name="stock"
-                type="radio"
-                id="unavailable"
-                className="p-2 form-check-input"
-                defaultValue="unavailable"
-              />
-              <label
-                htmlFor="unavailable"
-                className="form-check-label fs-0 fw-normal text-700 form-check-label"
-              >
-                Magasin 2
-              </label>
-            </div>
-            <div className="mb-0 form-check">
-              <input
-                name="stock"
-                type="radio"
-                id="toBeAnnounced"
-                className="p-2 form-check-input"
-                defaultValue="toBeAnnounced"
-              />
-              <label
-                htmlFor="toBeAnnounced"
-                className="form-check-label fs-0 fw-normal text-700 form-check-label"
-              >
-                Magasin 3
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
+      </form>
     </div>
-  </div>
-</form>
+  );
+};
 
-    </div>
-  )
-}
-
-export default CreateArticle
+export default CreateArticle;

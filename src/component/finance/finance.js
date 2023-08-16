@@ -1,6 +1,40 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Finance = () => {
+    const [totalAchats, setTotalAchats] = useState(0);
+    const [totalVentes, setTotalVentes] = useState(0);
+    const [totalBenefice, setTotalBenefice] = useState(0);
+  
+    useEffect(() => {
+      // Faites une requête GET pour obtenir tous les achats
+      axios.get('http://localhost:5001/api/achats')
+        .then(response => {
+          const achats = response.data.achats;
+          const sumMontantTotalAchats = achats.reduce((total, achat) => total + achat.montantTotal, 0);
+          setTotalAchats(sumMontantTotalAchats);
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération des achats:', error);
+        });
+  
+      // Faites une requête GET pour obtenir toutes les ventes
+      axios.get('http://localhost:5001/api/ventes')
+        .then(response => {
+          const ventes = response.data.ventes;
+          const sumMontantTotalVentes = ventes.reduce((total, vente) => total + vente.montantTotal, 0);
+          setTotalVentes(sumMontantTotalVentes);
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération des ventes:', error);
+        });
+    }, []);
+  
+    useEffect(() => {
+      // Mettre à jour le total du bénéfice lorsque les totaux des achats et des ventes changent
+      setTotalBenefice(totalVentes - totalAchats);
+    }, [totalAchats, totalVentes]);
+  
   return (
     <div>
 
@@ -21,8 +55,8 @@ const Finance = () => {
                 <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                         <div className="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Earnings (Monthly)</div>
-                        <div className="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                            Total achat (Mois)</div>
+                        <div className="h5 mb-0 font-weight-bold text-gray-800">FCFA {totalAchats}</div>
                     </div>
                     <div className="col-auto">
                         <i className="fas fa-calendar fa-2x text-gray-300"></i>
@@ -39,8 +73,8 @@ const Finance = () => {
                 <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
                         <div className="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Earnings (Annual)</div>
-                        <div className="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                            Total vente (Mois)</div>
+                        <div className="h5 mb-0 font-weight-bold text-gray-800">FCFA {totalVentes}</div>
                     </div>
                     <div className="col-auto">
                         <i className="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -56,7 +90,7 @@ const Finance = () => {
             <div className="card-body">
                 <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
-                        <div className="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
+                        <div className="text-xs font-weight-bold text-info text-uppercase mb-1">Total stock
                         </div>
                         <div className="row no-gutters align-items-center">
                             <div className="col-auto">
@@ -80,16 +114,16 @@ const Finance = () => {
 
     {/*  <!-- Pending Requests Card Example --> */}
     <div className="col-xl-3 col-md-6 mb-4">
-        <div className="card border-left-warning shadow h-100 py-2">
+        <div className="card border-left-success shadow h-100 py-2">
             <div className="card-body">
                 <div className="row no-gutters align-items-center">
                     <div className="col mr-2">
-                        <div className="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Pending Requests</div>
-                        <div className="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                        <div className="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Benefice</div>
+                        <div className="h5 mb-0 font-weight-bold text-gray-800">FCFA {totalBenefice.toFixed(2)}</div>
                     </div>
                     <div className="col-auto">
-                        <i className="fas fa-comments fa-2x text-gray-300"></i>
+                        <i className="fas fa-dollar-sign fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
