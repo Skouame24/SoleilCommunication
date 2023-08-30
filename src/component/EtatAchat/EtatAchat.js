@@ -3,8 +3,25 @@ import axios from 'axios';
 import { faCheck, faHourglass, faShare, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AchatTable from '../AchatTable/AchatTable';
+import ResponsiveTable from '../ResponsiveTable/ResponsiveTable';
 
 const EtatAchat = () => {
+
+
+  const printPage = () => {
+    const dashboardElements = document.querySelectorAll('.page-header, .page-sidebar');
+    dashboardElements.forEach(element => {
+      element.style.display = 'none';
+    });
+
+    window.print();
+
+    dashboardElements.forEach(element => {
+      element.style.display = 'block';
+    });
+  };
+
+
   const [totalAchats, setTotalAchats] = useState(0); // État pour stocker le nombre total d'achats
   const [achatsDuJour, setAchatsDuJour] = useState(0); // État pour stocker le nombre d'achats du jour
   const [achatsDeLaSemaine, setAchatsDeLaSemaine] = useState(0); // État pour stocker le nombre d'achats de la semaine
@@ -44,35 +61,41 @@ const EtatAchat = () => {
   return (
     <section>
 <header className="page-header page-header-dark bg-gradient-primary-to-secondary pb-10 full-width-header entete">
-        <div className="container-xl px-4">
-          <div className="page-header-content pt-4">
-            <div className="row align-items-center justify-content-between">
-              <div className="col-auto mt-4 ms-auto"> {/* Ajout de la classe ms-auto ici */}
-                <h1 className="page-header-title" style={{ color: 'white' }}>
-                  <div className="page-header-icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={24}
-                      height={24}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="feather feather-activity"
-                    >
-                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                    </svg>
-                  </div>
-                  Etats des achats
-                </h1>
-                <div className="page-header-subtitle">Gerer les espaces lies au achat</div>
-              </div>
+  <div className="container-xl px-4">
+    <div className="page-header-content pt-4">
+      <div className="row align-items-center justify-content-between">
+        <div className="col-auto mt-4">
+          <h1 className="page-header-title" style={{ color: 'white' }}>
+            <div className="page-header-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={24}
+                height={24}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-activity"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
             </div>
-          </div>
+            Etats des achats
+          </h1>
+          <div className="page-header-subtitle">Gerer les espaces lies au achat</div>
         </div>
-      </header>
+        <div className="col-auto mt-4">
+          <a href="#" className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onClick={printPage}>
+            <i className="fas fa-download fa-sm text-white-50"></i> Generate Report
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
   <div className="row card-container" style={{marginBottom:'13px',marginTop:'213px'}} >
   <div className="mt-6 col-xl-3 col-lg-6 col-md-12 col-12 ">
       <div className="card">
@@ -156,6 +179,7 @@ const EtatAchat = () => {
       </div>
     </div>
   </div>
+  <ResponsiveTable />
   <AchatTable   />
 </section>
   )

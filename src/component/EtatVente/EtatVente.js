@@ -4,7 +4,25 @@ import React, { useState, useEffect } from 'react';
 import './EtatVente.css'
 import VenteTable from '../VenteTable/VenteTable';
 import axios from 'axios';
+import ResponsiveTable from '../Client/ResponsiveTable';
+
+
 const EtatVente = () => {
+
+
+  const printPage = () => {
+    const dashboardElements = document.querySelectorAll('.page-header, .page-sidebar');
+    dashboardElements.forEach(element => {
+      element.style.display = 'none';
+    });
+
+    window.print();
+
+    dashboardElements.forEach(element => {
+      element.style.display = 'block';
+    });
+  };
+
   const [totalVentes, setTotalVentes] = useState(0);
   const [ventesDuJour, setVentesDuJour] = useState(0);
   const [ventesDeLaSemaine, setVentesDeLaSemaine] = useState(0);
@@ -40,35 +58,40 @@ const EtatVente = () => {
   return (
     <section>
 <header className="page-header page-header-dark bg-gradient-primary-to-secondary pb-10 full-width-header entete">
-        <div className="container-xl px-4">
-          <div className="page-header-content pt-4">
-            <div className="row align-items-center justify-content-between">
-              <div className="col-auto mt-4 ms-auto"> {/* Ajout de la classe ms-auto ici */}
-                <h1 className="page-header-title" style={{ color: 'white' }}>
-                  <div className="page-header-icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={24}
-                      height={24}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="feather feather-activity"
-                    >
-                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                    </svg>
-                  </div>
-                  Etats des Ventes
-                </h1>
-                <div className="page-header-subtitle">Gerer les espaces lies au ventes</div>
-              </div>
+  <div className="container-xl px-4">
+    <div className="page-header-content pt-4">
+      <div className="row align-items-center justify-content-between">
+        <div className="col-auto mt-4">
+          <h1 className="page-header-title" style={{ color: 'white' }}>
+            <div className="page-header-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={24}
+                height={24}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="feather feather-activity"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
             </div>
-          </div>
+            Etats des ventes
+          </h1>
+          <div className="page-header-subtitle">Gerer les espaces lies au ventes</div>
         </div>
-      </header>
+        <div className="col-auto mt-4">
+          <a href="#" className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onClick={printPage}>
+            <i className="fas fa-download fa-sm text-white-50"></i> Generate Report
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
   <div className="row card-container" style={{marginBottom:'13px',marginTop:'213px'}} >
   <div className="mt-6 col-xl-3 col-lg-6 col-md-12 col-12 ">
       <div className="card">
@@ -112,7 +135,6 @@ const EtatVente = () => {
           </div>
           <div>
             <h3 className="fw-bold">{ventesDuJour}</h3>
-
           </div>
         </div>
       </div>
@@ -154,6 +176,7 @@ const EtatVente = () => {
       </div>
     </div>
   </div>
+  <ResponsiveTable/>
   <VenteTable  />
 </section>
   )

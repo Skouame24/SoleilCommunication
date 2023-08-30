@@ -29,10 +29,13 @@ import FactureVente from './component/Facture/FactureVente';
 import Informatique from './component/Informatique/Informatique';
 import Fourniture from './component/Fourniture/Fourniture';
 import Communication from './component/Communication/Communication';
+import FormEdit from './component/FormAchat/FormEdit';
+import FormEditVente from './component/FormVente/FormEditVente';
 
 function Dashboard({ userData }) {
   const [style, setStyle] = useState("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion");
-
+  
+  
   const changeStyle = () => {
     if (style === "navbar-nav bg-gradient-primary sidebar sidebar-dark accordion") {
       setStyle("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled");
@@ -40,6 +43,7 @@ function Dashboard({ userData }) {
       setStyle("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion");
     }
   };
+  console.log(userData)
 
   return (
     <BrowserRouter>
@@ -49,7 +53,7 @@ function Dashboard({ userData }) {
         {/*  <!-- Page Wrapper --> */}
         <div id="wrapper">
           {/*  <!-- Sidebar --> */}
-          <Sidebar changeStyle={changeStyle} />
+          <Sidebar changeStyle={changeStyle} className="hide-on-print" />
           {/*  <!-- End of Sidebar --> */}
 
           {/*  <!-- Content Wrapper --> */}
@@ -57,7 +61,7 @@ function Dashboard({ userData }) {
             {/*  <!-- Main Content --> */}
             <div id="content">
               {/*  <!-- Topbar --> */}
-              <Navabar userData={userData}/>
+              <Navabar userData={userData} className="hide-on-print" />
               {/*  <!-- End of Topbar --> */}
 
               {/*   <!-- /.container-fluid --> */}
@@ -68,8 +72,10 @@ function Dashboard({ userData }) {
                 <Route path='/fourniture' element={< Fourniture/>} />
                 <Route path='/communication' element={< Communication/>} />
                 <Route path='/formAchat' element={< FormAchat/>} />
+                <Route path="/editer-achat/:achatId"  element={< FormEdit/>} />
                 <Route path='/' element={< Card/>} />
                 <Route path='/formVente' element={< FormVente/>} />
+                <Route path="/editer-vente/:venteId"  element={< FormEditVente/>} />
                 <Route path='/etatVente' element={< EtatVente/>} />
                 <Route path='/formClient' element={< FormClient/>} />
                 <Route path='/clienttable' element={< ClientsTable/>} />

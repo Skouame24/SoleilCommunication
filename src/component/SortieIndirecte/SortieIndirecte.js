@@ -4,6 +4,7 @@ import axios from 'axios';
 const SortieIndirecte = () => {
   const [ventes, setVentes] = useState([]);
   const [articlesDetails, setArticlesDetails] = useState({});
+  const [typeArticles, setTypeArticles] = useState({}); // Updated to store type articles directly
 
   useEffect(() => {
     axios.get('http://localhost:5001/api/ventes')
@@ -13,6 +14,26 @@ const SortieIndirecte = () => {
       .catch(error => {
         console.error('Erreur lors de la récupération des ventes :', error);
       });
+  }, []);
+
+  useEffect(() => {
+    const fetchTypeArticles = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/type');
+        const typeArticles = response.data.typeArticles;
+
+        const typeArticlesMap = {};
+        for (const typeArticle of typeArticles) {
+          typeArticlesMap[typeArticle.id] = typeArticle.nom;
+        }
+
+        setTypeArticles(typeArticlesMap);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des types d\'articles :', error);
+      }
+    };
+
+    fetchTypeArticles();
   }, []);
 
   useEffect(() => {
@@ -43,6 +64,7 @@ const SortieIndirecte = () => {
     ...article,
     venteDate: vente.dateVente,
     clientId: vente.clientId,
+    
   })));
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -53,12 +75,17 @@ const SortieIndirecte = () => {
     backgroundColor: '#4e73df',
     color: '#ffffff',
   };
+  const displayedArticlesOnCurrentPageSorted = [...displayedArticlesOnCurrentPage].sort((a, b) => {
+    const designationA = articlesDetails[a.articleId]?.article?.designation || '';
+    const designationB = articlesDetails[b.articleId]?.article?.designation || '';
+    return designationA.localeCompare(designationB);
+  });
 
   return (
     <div>
       <section className='Commande'>
-      <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
-      <input type="submit" value="Ajouter " className="bouton" />
+        <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
+          <input type="submit" value="Ajouter " className="bouton" />
           <div className="input-group" style={{ width: '50%' }}>
             <input
               type="text"
@@ -72,36 +99,41 @@ const SortieIndirecte = () => {
               <i className="fas fa-search fa-sm" />
             </button>
           </div>
-        </div>  
+        </div>
         <div className="table-responsive">
-          <table className="table table-striped table-hover">
-            <thead style={theadStyle}>
-              <tr>
-                <th scope="col">Date de vente</th>
-                <th scope="col">Designation</th>
-                <th scope="col">Quantité</th>
-                <th scope="col">Nom du magasin</th>
-              </tr>
-            </thead>
-            <tbody>
-  {displayedArticlesOnCurrentPage.map((article, index) => {
-    const articleDetails = articlesDetails[article.articleId];
-    const designation = articleDetails?.article?.designation || ''; // Récupérer la désignation de l'article
-    console.log(designation)
-    return (
-      <tr key={index}>
-        <td> {new Date(article.venteDate).toLocaleDateString()}</td>
-        <td>{designation}</td> {/* Afficher la désignation de l'article */}
-        <td>{article.quantite}</td>
-        <td>{article.clientId}</td>
+        {displayedArticlesOnCurrentPageSorted.length === 0 ? (
+  <p>Aucune donnée à afficher pour le moment.</p>
+) : (
+  <table className="table table-striped table-hover">
+    <thead style={theadStyle}>
+      <tr>
+        <th scope="col">Date de sortie</th>
+        <th scope="col">Designation</th>
+        <th scope="col">Caractéristiques</th>
+        <th scope="col">Quantité</th>
+        <th scope="col">Groupe d'article</th>
       </tr>
-    );
-  })}
-</tbody>
+    </thead>
+    <tbody>
+      {displayedArticlesOnCurrentPageSorted.map((article, index) => {
+        const articleDetails = articlesDetails[article.articleId];
+        const designation = articleDetails?.article?.designation || '';
+        const caracteristique = articleDetails?.article?.caracteristique || '';
+        const typeArticle =  articleDetails?.article?.typeArticleId || '';
+        return (
+          <tr key={index}>
+            <td>{new Date(article.venteDate).toLocaleDateString()}</td>
+            <td>{designation}</td>
+            <td>{caracteristique}</td>
+            <td>{article.quantite}</td>
+            <td>{typeArticles[typeArticle]}</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+)}
 
-
-
-          </table>
         </div>
       </section>
     </div>

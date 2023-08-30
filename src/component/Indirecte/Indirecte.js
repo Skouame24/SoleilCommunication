@@ -3,13 +3,11 @@ import axios from 'axios';
 
 const Indirecte = () => {
   const [achats, setAchats] = useState([]);
-  const [fournisseurMap, setFournisseurMap] = useState({});
-  const [articleMap, setArticleMap] = useState({});
+  const [typeArticles, setTypeArticles] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const [achatsDetails, setAchatsDetails] = useState({});
-
 
   useEffect(() => {
+    // Récupérer les achats depuis l'API
     axios.get('http://localhost:5001/api/achats')
       .then(response => {
         setAchats(response.data.achats);
@@ -17,65 +15,23 @@ const Indirecte = () => {
       .catch(error => {
         console.error('Erreur lors de la récupération des achats:', error);
       });
-  }, []);
 
-  useEffect(() => {
-    const fetchFournisseurs = async () => {
-      try {
-        const response = await axios.get('http://localhost:5001/api/fournisseur');
-        const fournisseurs = response.data.fournisseurs;
-  
-        const fournisseurMap = {};
-        for (const fournisseur of fournisseurs) {
-          fournisseurMap[fournisseur.id] = fournisseur.nom;
-        }
-        
-        setFournisseurMap(fournisseurMap);
-      } catch (error) {
-        console.error('Erreur lors de la récupération des fournisseurs:', error);
-      }
-    };
-  
-    fetchFournisseurs();
-  }, []);
-  
-  useEffect(() => {
-    const articleIdsAchats = achats.flatMap(achat => {
-      console.log('achat:', achat); // Vérifier la structure de l'achat
-      const articleData = achat.articlesData || [];
-      return articleData.map(article => {
-        console.log('article:', article); // Vérifier la structure de l'articleData
-        return article.articleId !== undefined ? article.articleId : null;
+    // Récupérer les types d'articles depuis l'API
+    axios.get('http://localhost:5001/api/type')
+      .then(response => {
+        const types = response.data.typeArticles.reduce((acc, type) => {
+          acc[type.id] = type.nom;
+          return acc;
+        }, {});
+        setTypeArticles(types);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des types d\'articles :', error);
       });
-    }).filter(articleId => articleId !== null); // Supprimer les valeurs null
-  
-    console.log('articleIdsAchats:', articleIdsAchats); // Vérifier les articleId extraits
-  
-    const uniqueArticleIdsAchats = [...new Set(articleIdsAchats)];
-  
-    const fetchAchatsDetails = async () => {
-      const achatsDetailsData = {};
-      for (const articleId of uniqueArticleIdsAchats) {
-        try {
-          const response = await axios.get(`http://localhost:5001/api/articles/${articleId}`);
-          achatsDetailsData[articleId] = response.data;
-          console.log(achatsDetailsData[articleId])
-        } catch (error) {
-          console.error(`Erreur lors de la récupération des détails de l'article d'achat ${articleId} :`, error);
-        }
-      }
-      setAchatsDetails(achatsDetailsData);
-    };
-  
-    if (uniqueArticleIdsAchats.length > 0) {
-      fetchAchatsDetails();
-    }
-  }, [achats]);
-  
+  }, []);
 
   const itemsPerPage = 4;
   const threshold = 4;
-
   const totalPages = Math.ceil(achats.length / itemsPerPage);
 
   const changePage = (pageNumber) => {
@@ -101,7 +57,6 @@ const Indirecte = () => {
       </li>
     );
   }
-
   return (
     <div>
       <section className='Commande'>
@@ -123,56 +78,57 @@ const Indirecte = () => {
         </div> 
         <div className="py-0 card-body">
           <div className="table-responsive">
-            <table className="table table-striped table-hover">
-              <thead style={theadStyle}>
-                <tr>
-                  <th scope="col">Date achat</th>
-                  <th scope="col">Designation</th>
-                  <th scope="col">Caractéristiques</th>
-                  <th scope="col">Quantité</th>
-                  <th scope="col">type Id </th>
-                  <th scope="col">Fournisseur</th>
-                </tr>
-              </thead>
-              <tbody>
-  {displayedAchats.map((achat, index) => (
-    <tr key={index}>
-      <td>{new Date(achat.dateAchat).toLocaleDateString()}</td>
-      <td>
-        {achat.articlesData.map((article, articleIndex) => (
-          <div key={articleIndex}>
-            <p>{article.designation}</p>
-          </div>
-        ))}
-      </td>
-      <td>
-        {achat.articlesData.map((article, articleIndex) => (
-          <div key={articleIndex}>
-            <p>{article.caracteristique}</p>
-          </div>
-        ))}
-      </td>
-      <td>
-        {achat.articlesData.map((article, articleIndex) => (
-          <div key={articleIndex}>
-            <p>{article.quantite}</p>
-          </div>
-        ))}
-      </td>
-      <td>
-        {achat.articlesData.map((article, articleIndex) => (
-          <div key={articleIndex}>
-            <p>{article.typeArticleId
-}</p>
-          </div>
-        ))}
-      </td>
-      <td>{fournisseurMap[achat.fournisseurId]}</td>
-    </tr>
-  ))}
-</tbody>
+          {displayedAchats.length === 0 ? (
+  <p>Aucune donnée à afficher pour le moment.</p>
+) : (
+  <table className="table table-striped table-hover">
+    <thead style={theadStyle}>
+      <tr>
+        <th scope="col">Date achat</th>
+        <th scope="col">Designation</th>
+        <th scope="col">Caractéristiques</th>
+        <th scope="col">Quantité</th>
+        <th scope="col">Groupe d'article</th>
+      </tr>
+    </thead>
+    <tbody>
+      {displayedAchats.map((achat, index) => (
+        <tr key={index}>
+          <td>{new Date(achat.dateAchat).toLocaleDateString()}</td>
+          <td>
+            {achat.articlesData.map((article, articleIndex) => (
+              <div key={articleIndex}>
+                <p>{article.designation}</p>
+              </div>
+            ))}
+          </td>
+          <td>
+            {achat.articlesData.map((article, articleIndex) => (
+              <div key={articleIndex}>
+                <p>{article.caracteristique}</p>
+              </div>
+            ))}
+          </td>
+          <td>
+            {achat.articlesData.map((article, articleIndex) => (
+              <div key={articleIndex}>
+                <p>{article.quantite}</p>
+              </div>
+            ))}
+          </td>
+          <td>
+            {achat.articlesData.map((article, articleIndex) => (
+              <div key={articleIndex}>
+                <p>{article.type}</p>
+              </div>
+            ))}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)}
 
-            </table>
           </div>
         </div>
       </section>

@@ -37,4 +37,13 @@
 .Card.expanded {
     width: 81%;
   }
+  .hide-on-print {
+    display: none;
+  }
+  
+  @media print {
+    .hide-on-print {
+      display: none !important; /* Utilisation de !important pour assurer que le style est appliqué */
+    }
+  }
   

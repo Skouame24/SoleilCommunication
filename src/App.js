@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Dashboard from './Dashboard';
 import Login from './component/Login/Login';
+import './App.css';
 
 function App() {
   const [token, setToken] = useState(null);
@@ -9,10 +10,9 @@ function App() {
   useEffect(() => {
     // Vérifier si le token est stocké (par exemple, dans les cookies ou le stockage local)
     const storedToken = localStorage.getItem('token');
-    
+
     if (storedToken) {
       setToken(storedToken);
-      fetchUserData(storedToken); // Récupérer les données de l'utilisateur
     }
   }, []);
 
@@ -33,7 +33,6 @@ function App() {
       if (response.ok) {
         const data = await response.json();
         setUserData(data);
-        console.log(data);
       } else {
         console.error('Erreur lors de la récupération des données de l\'utilisateur :', response.statusText);
       }
@@ -42,7 +41,11 @@ function App() {
     }
   };
 
-  console.log(userData);
+  useEffect(() => {
+    if (token) {
+      fetchUserData(token);
+    }
+  }, [token]); // Exécute le useEffect à chaque changement de token
 
   return (
     <div>

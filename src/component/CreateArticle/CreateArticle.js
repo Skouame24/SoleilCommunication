@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const CreateArticle = () => {
   const [designation, setDesignation] = useState('');
@@ -50,20 +53,33 @@ const CreateArticle = () => {
 
     // Envoyez les données au serveur ici (utilisez l'URL appropriée)
     axios.post('http://localhost:5001/api/articles', requestData)
-      .then(response => {
-        // Réinitialiser les champs après la soumission réussie
-        setDesignation('');
-        setCaracteristique('');
-        setQuantite('');
-        setCategorie('');
-        setType('');
-      })
-      .catch(error => {
-        console.error('Erreur lors de l\'envoi des données :', error);
-        // Gérer les erreurs ici si nécessaire
-      });
-  };
+    .then(response => {
+      setDesignation('');
+      setCaracteristique('');
+      setQuantite('');
+      setCategorie('');
+      setType('');
 
+      // Afficher un toast de succès
+      toast.success('Article enregistré avec succès', {
+        position: toast.POSITION.TOP_RIGHT
+      });
+    })
+    .catch(error => {
+      console.error('Erreur lors de l\'envoi des données :', error);
+
+      // Afficher un toast d'erreur
+      toast.error('Une erreur est survenue lors de l\'enregistrement de l\'article', {
+        position: toast.POSITION.TOP_RIGHT
+      });
+    });
+};
+
+  const bouStyle = {
+    width: "27%" ,
+    marginLeft:"340px",
+    padding:"5px",
+    };
   return (
     <div>
       <div className='content-header' style={{ marginBottom: "9px" }}>
@@ -73,7 +89,7 @@ const CreateArticle = () => {
         <div className="g-3 row">
           <div className="col-xl-12">
             <div className="card mb-4">
-              <div className="card-header">Details Article</div>
+              <div className="bg-primary card-header" style={{color:'white'}}>Details Article</div>
               <div className="card-body">
                 <div className="mb-3">
                   <label className="small mb-1" htmlFor="inputDesignation">
@@ -155,14 +171,15 @@ const CreateArticle = () => {
                     </select>
                   </div>
                 </div>
-                <button className="bouton" type="submit">
-                  Save
-                </button>
+                <button className="bouton" type="submit" style={bouStyle}>
+            Enregistrer
+          </button>
               </div>
             </div>
           </div>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };

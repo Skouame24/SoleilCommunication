@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import html2pdf from 'html2pdf.js';
 
 
 
@@ -17,8 +20,25 @@ const getCategoryName = (categoryId) => {
 };
 const BaseArticle = () => {
   const [articles, setArticles] = useState([]);
-  // ... Autres états et fonctions ...
+  const [typeArticles, setTypeArticles] = useState([]);
 
+
+
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/type')
+      .then(response => {
+        setTypeArticles(response.data.typeArticles);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des types d\'articles :', error);
+      });
+  }, []);
+
+  const getTypeName = (typeArticleId) => {
+    const typeArticle = typeArticles.find(type => type.id === typeArticleId);
+    return typeArticle ? typeArticle.nom : 'Type inconnu';
+  };
+  
   // Effectuer la requête GET lors du chargement du composant
   useEffect(() => {
     fetchArticles();
@@ -44,7 +64,7 @@ const BaseArticle = () => {
     opacity: 0.6,
   };
  // Nombre d'articles par page
- const itemsPerPage = 5;
+ const itemsPerPage = 20;
 
  // État pour gérer la page actuelle
  const [currentPage, setCurrentPage] = useState(1);
@@ -87,10 +107,11 @@ const BaseArticle = () => {
     // Filtrer les articles en fonction de la recherche
     const filtered = articles.filter(
       (article) =>
-        article.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.storeName.toLowerCase().includes(searchTerm.toLowerCase())
+        (article.name?.toLowerCase()?.includes(searchTerm.toLowerCase())) ||
+        (article.category?.toLowerCase()?.includes(searchTerm.toLowerCase())) ||
+        (article.storeName?.toLowerCase()?.includes(searchTerm.toLowerCase()))
     );
+    
     setFilteredArticles(filtered);
   };
   // Fonction pour supprimer un article par son ID
@@ -98,19 +119,45 @@ const BaseArticle = () => {
     try {
       // Faites la requête DELETE à votre API avec l'ID de l'article à supprimer
       await axios.delete(`http://localhost:5001/api/articles/${articleId}`);
-
+  
       // Mettez à jour la liste des articles en rechargeant les données depuis l'API
       fetchArticles();
+  
+      // Afficher un toast de succès
+      toast.success('L\'article a été supprimé avec succès !', {
+        position: 'top-right',
+        autoClose: 3000, // Durée en millisecondes
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     } catch (error) {
       console.error('Erreur lors de la suppression de l\'article:', error);
     }
   };
+  
+  const downloadPDF = () => {
+    const section = document.getElementById('download_section'); // ID de la section à télécharger
+    const pdfOptions = {
+      margin: 10,
+      filename: `BaseArtcle.pdf`, // Nom du fichier PDF
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    };
+  
+    html2pdf().from(section).set(pdfOptions).save();
+  };
 
  return (
    <div>
-     <div className='content-header'>
-       <h2 className='header'>Base des articles </h2>
-     </div>
+     <div className="d-sm-flex align-items-center justify-content-between mb-4">
+<h2 className='header'> Base des articles </h2>
+    <a href="#" className="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" onClick={downloadPDF}><i
+        className="fas fa-download fa-sm text-white-50"></i> Generer Report</a>
+</div>
      <div className="input-group mb-3" style={{width:'50%',float:'right',marginRight:"30px", marginTop:'10px', marginBottom:'10px'}}>
         <input
           type="text"
@@ -127,36 +174,41 @@ const BaseArticle = () => {
           <i className="fas fa-search fa-sm" />
         </button>
       </div>
-     <div className="py-0 card-body">
+     <div className="py-0 card-body" id="download_section">
        <div className="table-responsive">
-         <div className="border border-1">
-           <div className="border border-1">
-             <table className="table table-striped table-hover">
-               <thead style={theadStyle}>
-                 <tr>
-                   <th scope="col">Designation</th>
-                   <th scope="col">Quantite</th>
-                   <th scope="col">Domaine activite</th>
-                   <th scope="col">Action</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 {displayedArticles.map((article) => (
-                   <tr key={article.id}>
-                     <td>{article.designation}</td>
-                     <td>{article.quantite}</td>
-                     <td>{getCategoryName(article.categorieId)}</td> {/* Utilisation de la fonction getCategoryName */}
-                     <td> <i
-                className="fas fa-trash-alt"
-                style={{ marginLeft: '10px', cursor: 'pointer' }}
-                onClick={() => deleteArticle(article.id)}
-              ></i></td>
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
-           </div>
-         </div>
+       {displayedArticles.length === 0 ? (
+  <p>Aucune donnée à afficher pour le moment.</p>
+) : (
+  <table className="table table-striped table-hover">
+    <thead style={theadStyle}>
+      <tr>
+        <th scope="col">Designation</th>
+        <th scope="col">Quantite</th>
+        <th scope="col">Domaine activite</th>
+        <th scope="col">Groupe d'article</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {displayedArticles.map((article) => (
+        <tr key={article.id}>
+          <td>{article.designation}</td>
+          <td>{article.quantite}</td>
+          <td>{getCategoryName(article.categorieId)}</td>
+          <td>{getTypeName(article.typeArticleId)}</td>
+          <td>
+            <i
+              className="fas fa-trash-alt"
+              style={{ marginLeft: '10px', cursor: 'pointer' }}
+              onClick={() => deleteArticle(article.id)}
+            ></i>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)}
+
        </div>
      </div>
      {totalPages > 1 && (
@@ -200,6 +252,7 @@ const BaseArticle = () => {
              </svg>
            </button>
          </div>
+         <ToastContainer />
        </div>
      )}
    </div>

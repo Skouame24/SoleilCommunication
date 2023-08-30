@@ -61,19 +61,13 @@ const Profile = ({userData}) => {
         <div className="bg-primary card-header" style={{color:'white'}}>Boutique</div>
         <div className="card-body text-center">
           {/* Profile picture image*/}
-          <img
-            className="img-account-profile rounded-circle mb-2"
-            src="assets/img/illustrations/profiles/profile-1.png"
-            alt=""
-          />
+          
           {/* Profile picture help block*/}
           <div className="small font-italic text-muted mb-4">
-            JPG or PNG no larger than 5 MB
+           Soleil Communicatiojn MultiServices
           </div>
           {/* Profile picture upload button*/}
-          <button className="btn btn-primary" type="button">
-            Upload new image
-          </button>
+         
         </div>
       </div>
     </div>

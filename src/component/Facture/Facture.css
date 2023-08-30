@@ -329,3 +329,23 @@ td {
 .invoice-4 .invoice-bottom {
     padding: 0 50px 10px;
 }
+/* Cacher le dashboard et la navbar à l'impression */
+/* Cacher la barre latérale à l'impression */
+@media print {
+    .cs-sidebar {
+      display: none;
+    }
+  }
+  /* Cacher les éléments à l'impression */
+@media print {
+    .cs-hide-print {
+      display: none;
+    }
+  }
+  @media print {
+    .cs-hide-print {
+      visibility: hidden !important;
+      display: none !important;
+    }
+  }
+  

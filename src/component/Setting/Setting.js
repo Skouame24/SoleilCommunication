@@ -44,8 +44,8 @@ console.log(userData)
             </ul>
           </div>
           <div className="activite-menu">
-          {activeLink === 'profile' && <Profile userData={userData}/>}
-          {activeLink === 'securite' && <ChangePwd />}
+          {activeLink === 'profile' && <Profile userData={userData} />}
+          {activeLink === 'securite' && <ChangePwd userData={userData}/>}
           </div>
     </div>
   )

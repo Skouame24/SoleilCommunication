@@ -25,8 +25,11 @@ import axios from 'axios';
           // Stocker le token dans le localStorage
           localStorage.setItem('token', response.data.token);
   
-          // Mettre à jour le token dans le composant parent
-          setToken(response.data.token);
+          // Attendre 3 secondes avant de rediriger vers le tableau de bord
+          setTimeout(() => {
+            // Mettre à jour le token dans le composant parent
+            setToken(response.data.token);
+          }, 3000);
         } else {
           console.error('Token non trouvé dans la réponse.');
         }

@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './Facture.css';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
+import logo from '../../assets/logo.jpeg';
+import html2pdf from 'html2pdf.js';
 
 
 const formatNumeroFacture = (id) => {
   return `FACT-${id.toString().padStart(3, '0')}`;
 };
+
 
 const Facture = () => {
   const { achatId } = useParams();
@@ -15,6 +18,9 @@ const Facture = () => {
   const [articleMap, setArticleMap] = useState({}); // Tableau pour stocker les articles par ID
   const [numFacture, setNumFacture] = useState('');
 
+
+ 
+  
 
   useEffect(() => {
     // Récupérer les détails de l'achat depuis votre API en utilisant achatId
@@ -62,50 +68,65 @@ const Facture = () => {
 
   // Extraire les informations du fournisseur
   const fournisseur = achatDetails.achat.fournisseur;
+  const dateAchat = achatDetails.achat.dateAchat ;
   const nomFournisseur = fournisseur.nom;
   const emailFournisseur = fournisseur.email;
   const localisationFournisseur = fournisseur.localisation;
   const achatArticles = achatDetails.achat.achatArticles;
   const articlesData = achatDetails.achat.articlesData;
+
+
+  const downloadPDF = () => {
+    const section = document.getElementById('download_section'); // ID de la section à télécharger
+    const pdfOptions = {
+      margin: 10,
+      filename: `facture_${numFacture}.pdf`, // Nom du fichier PDF
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    };
+  
+    html2pdf().from(section).set(pdfOptions).save();
+  };
     return (
-    <div className="cs-container">
-  <div className="cs-invoice cs-style1">
-    <div className="cs-invoice_in" id="download_section">
+    <div className="cs-container" >
+  <div className="cs-invoice cs-style1" id="download_section">
+    <div className="cs-invoice_in" >
       <div className="cs-invoice_head cs-type1 cs-mb25">
-        <div className="cs-invoice_left">
+        <div className="cs-invoice_left" style={{width:'50%'}}>
           <p className="cs-invoice_number cs-primary_color cs-mb5 cs-f16">
-            <b className="cs-primary_color">Facture  No:</b> #{numFacture}
+          <b className="cs-primary_color">Facture  No: #{numFacture}</b> 
           </p>
           <p className="cs-invoice_date cs-primary_color cs-m0">
   <b className="cs-primary_color">Date: </b>
-  {achatDetails.dateAchat}
+   {format(new Date(dateAchat), 'dd-MM-yyyy')}
 </p>
 
         </div>
         <div className="cs-invoice_right cs-text_right">
-          <div className="cs-logo cs-mb5">
-            <img src="assets/img/logo.svg" alt="Logo" />
+          <div className="cs-logo cs-mb5" style={{width:'50%',float:'right'}}>
+          <img src={logo} alt="logo" style={{maxWidth:'55%'}}/>
           </div>
         </div>
       </div>
       <div className="cs-invoice_head cs-mb10">
-        <div className="cs-invoice_left">
+      <div className="cs-invoice_left">
           <b className="cs-primary_color">Emetteur:</b>
-          <p>
-            Soleil Communication <br />
-            Abidjan, <br />
-            Cocody Angré 22e Arrondissement, <br />
-            Cote d'Ivoire
-          </p>
-        </div>
-        <div className="cs-invoice_right cs-text_right">
-          <b className="cs-primary_color">Addresse a:</b>
           <p>
           {nomFournisseur} <br />
           {localisationFournisseur} <br />
           {emailFournisseur}
           </p>
         </div>
+        <div className=" cs-invoice_right cs-text_right">
+          <b className="cs-primary_color">Addresse a:</b>
+          <p>
+            Soleil Communication <br />
+            Abidjan, <br />
+            Cocody Angré 22e Arrondissement, <br />
+          </p>
+        </div>
+        
       </div>
       <div className="cs-table cs-style1">
         <div className="cs-round_border">
@@ -123,10 +144,10 @@ const Facture = () => {
                     Qty
                   </th>
                   <th className="cs-width_1 cs-semi_bold cs-primary_color cs-focus_bg">
-                    Prix U. TTC  
+                    Prix U. HT 
                   </th>
                   <th className="cs-width_2 cs-semi_bold cs-primary_color cs-focus_bg cs-text_right">
-                    Prix Total TTC
+                    Prix Total HT
                   </th>
                 </tr>
               </thead>
@@ -152,7 +173,7 @@ const Facture = () => {
         <td className="cs-width_2">
           {articleData.quantite}
         </td>
-        <td className="cs-width_1">
+        <td className="cs-width_1" style={{paddingLeft:42}}>
         {articleData.prix} {/* Utilisez le prix d'achat de l'article */}
         </td>
         <td className="cs-width_2 cs-text_right">
@@ -183,23 +204,31 @@ const Facture = () => {
                 <tbody>
                   <tr className="cs-border_left">
                     <td className="cs-width_3 cs-semi_bold cs-primary_color cs-focus_bg">
-                     Total TTC 
+                     Total Remise
                     </td>
                     <td className="cs-width_3 cs-semi_bold cs-focus_bg cs-primary_color cs-text_right">
-                   
+                    {achatDetails.achat.tauxRemise } Fcfa  
                     </td>
                   </tr>
                   <tr className="cs-border_left">
                     <td className="cs-width_3 cs-semi_bold cs-primary_color cs-focus_bg">
-                    Remise
+                     Montant TVA (18%)
                     </td>
                     <td className="cs-width_3 cs-semi_bold cs-focus_bg cs-primary_color cs-text_right">
-                    {achatDetails.achat.tauxRemise} Fcfa    
+                    {achatDetails.achat.montantTVA} Fcfa    
                     </td>
                   </tr>
                   <tr className="cs-border_left">
                     <td className="cs-width_3 cs-semi_bold cs-primary_color cs-focus_bg">
-                    Montant Net Total TTC
+                     Remise TTC
+                    </td>
+                    <td className="cs-width_3 cs-semi_bold cs-focus_bg cs-primary_color cs-text_right">
+                    {achatDetails.achat.remiseTotalPourcent } Fcfa  
+                    </td>
+                  </tr>
+                  <tr className="cs-border_left">
+                    <td className="cs-width_3 cs-semi_bold cs-primary_color cs-focus_bg">
+                    Montant Net  TTC
                     </td>
                     <td className="cs-width_3 cs-semi_bold cs-focus_bg cs-primary_color cs-text_right">
                     {achatDetails.achat.montantTotal}   Fcfa
@@ -211,7 +240,7 @@ const Facture = () => {
           </div>
         </div>
       </div>
-      <div className="cs-invoice_head cs-mb10" style={{paddingTop:'60px'}}>
+      <div className="cs-invoice_head cs-mb4" style={{paddingTop:'30px'}}>
         <div className="cs-invoice_left">
            <div>
            <b className="cs-primary_color">Condition de paiement:</b>
@@ -230,7 +259,7 @@ const Facture = () => {
           <b className="cs-primary_color">Signature:</b>
         </div>
       </div>
-      <div className="cs-note" style={{marginTop:'11px'}}>
+      <div className="cs-note" style={{marginTop:'0px'}}>
         <div className="cs-note_left">
         </div>
         <div className="cs-note_right">
@@ -244,8 +273,10 @@ const Facture = () => {
       </div>
       {/* .cs-note */}
     </div>
-    <div className="cs-invoice_btns cs-hide_print">
-      <a href="javascript:window.print()" className="cs-invoice_btn cs-color1">
+    
+  </div>
+  <div className="cs-invoice_btns cs-hide_print">
+    <a href="#" className="cs-invoice_btn cs-color1" onClick={() => window.print()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="ionicon"
@@ -281,7 +312,7 @@ const Facture = () => {
         </svg>
         <span>Imprimer</span>
       </a>
-      <button id="download_btn" className="cs-invoice_btn cs-color2">
+      <button id="download_btn" className="cs-invoice_btn cs-color2" onClick={downloadPDF}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="ionicon"
@@ -307,8 +338,7 @@ const Facture = () => {
         </svg>
         <span>Download</span>
       </button>
-    </div>
-  </div>
+      </div>
 </div>
 
   )

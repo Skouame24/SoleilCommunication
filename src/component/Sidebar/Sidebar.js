@@ -21,8 +21,8 @@ const Sidebar = ({ changeStyle }) => {
   };
 
   return (
-    <>
-      <ul className={style} id="accordionSidebar">
+    < >
+      <ul className={style} id="accordionSidebar" >
         {/* Sidebar - Brand */}
         <a className="sidebar-brand d-flex align-items-center justify-content-center" href="#">
           <div className="sidebar-brand-icon rotate-n-15">
@@ -60,7 +60,7 @@ const Sidebar = ({ changeStyle }) => {
             <div className="bg-white py-2 collapse-inner rounded">
               <h6 className="collapse-header">Gestion Achat:</h6>
               <Link to='/formAchat' className="collapse-item" >Enregistrer un achat</Link>
-              <Link to='/EtatAchat' className="collapse-item">Eta des Achats</Link>
+              <Link to='/EtatAchat' className="collapse-item">Etat des Achats</Link>
             </div>
           </div>
         </li>
@@ -95,7 +95,7 @@ const Sidebar = ({ changeStyle }) => {
           <a className={`nav-link collapsed ${partnerExpanded ? 'active' : ''}`} href="#" data-toggle="collapse" data-target="#collapsePages"
             aria-expanded={partnerExpanded} aria-controls="collapsePages" onClick={togglePartnerCollapse}>
             <FontAwesomeIcon icon={faHandshake} />
-            <span style={{ marginLeft: '10px' }}>Collaborateur</span>
+            <span style={{ marginLeft: '10px' }}>Partenaires</span>
           </a>
           <div id="collapsePages" className={`collapse ${partnerExpanded ? 'show' : ''}`} aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div className="bg-white py-2 collapse-inner rounded">
@@ -126,7 +126,7 @@ const Sidebar = ({ changeStyle }) => {
           <div id="collapseStock" className={`collapse ${stockExpanded ? 'show' : ''}`} aria-labelledby="headingStock" data-parent="#accordionSidebar">
             <div className="bg-white py-2 collapse-inner rounded">
               <Link to="/createArticle" className="collapse-item" >Creer un article</Link>
-              <Link to="/createMagasin" className="collapse-item" >Creer un magasin</Link>
+              <Link to="/createMagasin" className="collapse-item" >Creer un groupe d'article</Link>
               <a className="collapse-item" ></a>
               <div className="collapse-divider"></div>
               <h6 className="collapse-header">Gestion de stock :</h6>
@@ -140,7 +140,19 @@ const Sidebar = ({ changeStyle }) => {
         {/* Nav Item - Tables */}
 
         {/* Divider */}
+        {/* Divider */}
+        <hr className="sidebar-divider" />
+        {/* Nav Item - Charts */}
+        <div className="sidebar-heading">
+          Gestion Finance
+        </div>
 
+        <li className="nav-item active">
+  <Link to='/finance' className="nav-link" >
+    <i className="fas fa-dollar-sign " />
+    <span>Finance</span>
+  </Link>
+</li>
         {/* Sidebar Toggler (Sidebar) */}
         {/* <div className="text-center d-none d-md-inline">
           <button className="rounded-circle border-0" id="sidebarToggle" onClick={changeStyle}></button>

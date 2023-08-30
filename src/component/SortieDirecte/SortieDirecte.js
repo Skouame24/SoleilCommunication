@@ -1,71 +1,45 @@
-import React ,{useState} from 'react'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const SortieDirecte = () => {
-    const [articles, setArticles] = React.useState([
-        {
-          designation: 'iPhone 11 Pro',
-          caracteristiques: '200GB, 2GB RAM, couleur noir',
-          quantite: 10,
-          magasin: 'Apple Store',
-          dateEntree: '2023-07-28',
-        },
-        {
-          designation: 'Samsung Galaxy S21',
-          caracteristiques: '128GB, 8GB RAM, couleur violet',
-          quantite: 15,
-          magasin: 'Samsung Store',
-          dateEntree: '2023-07-27',
-        },
-        {
-          designation: 'HP Pavilion Laptop',
-          caracteristiques: '512GB SSD, 16GB RAM, processeur Intel i7',
-          quantite: 5,
-          magasin: 'HP Store',
-          dateEntree: '2023-07-26',
-        },
-        {
-          designation: 'Dell XPS 13',
-          caracteristiques: '256GB SSD, 8GB RAM, processeur Intel i5',
-          quantite: 8,
-          magasin: 'Dell Store',
-          dateEntree: '2023-07-25',
-        },
-        {
-          designation: 'Lenovo ThinkPad',
-          caracteristiques: '1TB SSD, 32GB RAM, processeur AMD Ryzen',
-          quantite: 12,
-          magasin: 'Lenovo Store',
-          dateEntree: '2023-07-24',
-        },
-        {
-            designation: 'Lenovo ThinkPad',
-            caracteristiques: '1TB SSD, 32GB RAM, processeur AMD Ryzen',
-            quantite: 12,
-            magasin: 'Lenovo Store',
-            dateEntree: '2023-07-24',
-          },
-      ]);
-      const itemsPerPage = 4;
+  const [deletedArticles, setDeletedArticles] = useState([]);
+  const [typeArticles, setTypeArticles] = useState([]);
 
-  // État pour gérer la page actuelle
+  useEffect(() => {
+    // Faites une requête à votre API pour récupérer tous les articles supprimés
+    axios.get('http://localhost:5001/api/articles')
+      .then(response => {
+        const allArticles = response.data.articles;
+        const deletedArticles = allArticles.filter(article => article.supprime === true);
+        setDeletedArticles(deletedArticles);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des articles :', error);
+      });
+
+    // Faites une requête à votre API pour récupérer tous les types d'articles
+    axios.get('http://localhost:5001/api/type')
+      .then(response => {
+        const typeArticles = response.data.typeArticles;
+        setTypeArticles(typeArticles);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des types d\'articles :', error);
+      });
+  }, []);
+
+  const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(deletedArticles.length / itemsPerPage);
 
-  // Calcul du nombre total de pages
-  const totalPages = Math.ceil(articles.length / itemsPerPage);
-
-  // Fonction pour changer de page
   const changePage = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  // Index de début et de fin des articles affichés sur la page actuelle
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, articles.length);
+  const endIndex = Math.min(startIndex + itemsPerPage, deletedArticles.length);
+  const displayedArticles = deletedArticles.slice(startIndex, endIndex);
 
-  // Articles à afficher sur la page actuelle
-  const displayedArticles = articles.slice(startIndex, endIndex);
-
-  // Générer les boutons de pagination
   const paginationButtons = [];
   for (let i = 1; i <= totalPages; i++) {
     paginationButtons.push(
@@ -81,6 +55,7 @@ const SortieDirecte = () => {
     backgroundColor: '#4e73df',
     color: '#ffffff',
   };
+
   return (
     <div>
     <section className='Commande'>
@@ -102,29 +77,35 @@ const SortieDirecte = () => {
       </div>    
           <div className="py-0 card-body">
         <div className="table-responsive">
-          <table className="table table-striped table-hover">
-            <thead style={theadStyle}>
-              <tr>
-                <th scope="col">Date de sortie</th>
-                <th scope="col">Designation</th>
-                <th scope="col">Caractéristiques</th>
-                <th scope="col">Quantité</th>
-                <th scope="col">Nom du magasin</th>
-                <th scope="col">Raison</th>
-              </tr>
-            </thead>
-            <tbody>
-              {displayedArticles.map((article, index) => (
-                <tr key={index}>
-                  <td>{article.dateEntree}</td>
-                  <td>{article.designation}</td>
-                  <td>{article.caracteristiques}</td>
-                  <td>{article.quantite}</td>
-                  <td>{article.magasin}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {displayedArticles.length === 0 ? (
+  <p>Aucune donnée à afficher pour le moment.</p>
+) : (
+  <table className="table table-striped table-hover">
+    <thead style={theadStyle}>
+      <tr>
+        <th scope="col">Date de sortie</th>
+        <th scope="col">Designation</th>
+        <th scope="col">Caractéristiques</th>
+        <th scope="col">Quantité</th>
+        <th scope="col">Groupe d'article</th>
+      </tr>
+    </thead>
+    <tbody>
+      {displayedArticles.map((article) => (
+        <tr key={article.id}>
+          <td>{new Date(article.updatedAt).toLocaleDateString()}</td>
+          <td>{article.designation}</td>
+          <td>{article.caracteristique}</td>
+          <td>{article.quantite}</td>
+          <td>
+            {typeArticles.find(type => type.id === article.typeArticleId)?.nom || ''}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)}
+
         </div>
       </div>
     </section>

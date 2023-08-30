@@ -6,7 +6,9 @@ const FournisseursTable = () => {
   const [fournisseurs, setFournisseurs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredFournisseurs, setFilteredFournisseurs] = useState([]);
-
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState('');
+  
   const theadStyle = {
     backgroundColor: '#4e73df',
     color: '#ffffff',
@@ -39,6 +41,19 @@ const FournisseursTable = () => {
         console.error('Erreur lors de la récupération des fournisseurs :', error);
       });
   }, []);
+
+
+  
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/categories')
+      .then(response => {
+        setCategories(response.data.categories);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des catégories :', error);
+      });
+  }, []);
+  
 
   return (
     <div>
@@ -73,32 +88,34 @@ const FournisseursTable = () => {
         </div>  
       <div className="py-0 card-body">
         <div className="table-responsive">
-          <div className="border border-1">
-            <div className="border border-1">
-              <table className="table table-striped table-hover">
-                <thead style={theadStyle}>
-                  <tr>
-                    <th scope="col">Nom</th>
-                    <th scope="col">Prénom</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Contact</th>
-                    <th scope="col">Localisation</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredFournisseurs.map((fournisseur, index) => (
-                    <tr key={index}>
-                      <td>{fournisseur.nom}</td>
-                      <td>{fournisseur.prenom}</td>
-                      <td>{fournisseur.email}</td>
-                      <td>{fournisseur.contact}</td>
-                      <td>{fournisseur.localisation}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          
+        {filteredFournisseurs.length === 0 ? (
+  <p>Aucun fournisseur  pour le moment.</p>
+) : (
+  <table className="table table-striped table-hover">
+    <thead style={theadStyle}>
+      <tr>
+        <th scope="col">Nom</th>
+        <th scope="col">Prénom</th>
+        <th scope="col">Email</th>
+        <th scope="col">Contact</th>
+        <th scope="col">Localisation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredFournisseurs.map((fournisseur, index) => (
+        <tr key={index}>
+          <td>{fournisseur.nom}</td>
+          <td>{fournisseur.prenom}</td>
+          <td>{fournisseur.email}</td>
+          <td>{fournisseur.contact}</td>
+          <td>{fournisseur.localisation}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)}
+
         </div>
       </div>
     </div>

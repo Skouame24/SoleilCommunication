@@ -1,9 +1,33 @@
-import React, { useState } from 'react'
-import { Link, redirect } from 'react-router-dom'; // Importez le composant Link
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import './Navbar.css'
 
-const Navabar = ({userData}) => {
-    const [redirect, setRedirect] = useState(false);
+const Navabar = ({ userData }) => {
+    const [articles, setArticles] = useState([]);
+  const [stockAlerts, setStockAlerts] = useState([]);
+  console.log(userData)
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      // Effectuer une requête à votre API pour récupérer les articles
+      const response = await fetch('http://localhost:5001/api/articles');
+      const data = await response.json();
+
+      // Mettre à jour le state des articles avec les données reçues
+      setArticles(data.articles);
+
+      // Vérification des alertes de stock
+      const alerts = data.articles.filter(article => article.quantite === 0);
+      setStockAlerts(alerts);
+      console.log(alerts)
+    } catch (error) {
+      console.error('Erreur lors de la récupération des données:', error);
+    }
+  };
     const handleLogout = () => {
         // Supprimer le jeton d'accès du localStorage
         localStorage.removeItem('token');
@@ -32,6 +56,8 @@ const Navabar = ({userData}) => {
             setStyle("navbar-nav bg-gradient-primary sidebar sidebar-dark accordion")
         }
     };
+
+    
   return (
     <nav className="navbar navbar-expand navbar-light bg-white topbar static-top shadow">
 {/* Sidebar Toggle (Topbar) */}
@@ -85,7 +111,7 @@ const Navabar = ({userData}) => {
                                     <li className="nav-item dropdown no-arrow mx-1">
                                         <a className="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i className="fas fa-bell fa-fw"></i>
+  <i className="fas fa-bell fa-fw fa-lg "></i> {/* Ajoutez la classe "fa-lg" ici */}
                                             {/*  <!-- Counter - Alerts --> */}
                                             <span className="badge badge-danger badge-counter">3+</span>
                                         </a>
@@ -117,19 +143,22 @@ const Navabar = ({userData}) => {
                                                     $290.29 has been deposited into your account!
                                                 </div>
                                             </a>
-                                            <a className="dropdown-item d-flex align-items-center" href="#">
-                                                <div className="mr-3">
-                                                    <div className="icon-circle bg-warning">
-                                                        <i className="fas fa-exclamation-triangle text-white"></i>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div className="small text-gray-500">December 2, 2019</div>
-                                                    Spending Alert: We've noticed unusually high spending for your account.
-                                                </div>
-                                            </a>
-                                            <a className="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                                        </div>
+                                            {stockAlerts.map((alert, index) => (
+        <a className="dropdown-item d-flex align-items-center" href="#" key={index}>
+          <div className="mr-3">
+            <div className="icon-circle bg-warning">
+              <i className="fas fa-exclamation-triangle text-white"></i>
+            </div>
+          </div>
+          <div>
+            <div className="small text-gray-500">Date: {new Date(alert.createdAt).toLocaleString()}</div>
+            Stock Alert: Votre article {alert.designation} est insuffisant
+          </div>
+        </a>
+      ))}
+
+      <a className="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+    </div>
                                     </li>
 
                                     {/*  <!-- Nav Item - Messages --> */}
@@ -138,10 +167,12 @@ const Navabar = ({userData}) => {
 
                                     {/* <!-- Nav Item - User Information --> */}
                                     <li className="nav-item dropdown no-arrow">
+
                                         <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span className="mr-2 d-none d-lg-inline text-gray-600 small">{userData.prenom}  {userData.nom}</span>
-                                            <img className="img-profile rounded-circle"
+  <span className="mr-2 d-none d-lg-inline text-gray-600 small">
+             {userData ? `${userData.prenom} ${userData.nom}` : "Utilisateur"}
+           </span>                                            <img className="img-profile rounded-circle"
                                                 src="img/undraw_profile.svg" />
                                         </a>
                                         {/*  <!-- Dropdown - User Information --> */}
@@ -155,10 +186,7 @@ const Navabar = ({userData}) => {
                                                 <i className="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
                                                 Parametre
                                             </Link>
-                                            <Link to="finance" className="dropdown-item" >
-                                                <i className="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                                Voir les finances
-                                            </Link>
+                            
                                             <div className="dropdown-divider"></div>
                                             <Link className="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal" onClick={handleLogout}>
                                                 <i className="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>

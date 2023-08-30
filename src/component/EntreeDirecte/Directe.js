@@ -4,18 +4,14 @@ import './Directe.css';
 
 const Directe = () => {
   const [articles, setArticles] = useState([]);
-
+  const [typeArticles, setTypeArticles] = useState({});
 
   useEffect(() => {
-    // Récupérer la liste de tous les articles depuis votre API
     const fetchArticles = async () => {
       try {
         const response = await axios.get('http://localhost:5001/api/articles');
         const allArticles = response.data.articles;
-
-        // Filtrer les articles où l'entrée est directe (entreeDirecte est true)
         const directEntryArticles = allArticles.filter(article => article.entreeDirecte);
-
         setArticles(directEntryArticles);
       } catch (error) {
         console.error('Erreur lors de la récupération des articles:', error);
@@ -25,6 +21,19 @@ const Directe = () => {
     fetchArticles();
   }, []);
 
+  useEffect(() => {
+    axios.get('http://localhost:5001/api/type')
+      .then(response => {
+        const types = response.data.typeArticles.reduce((acc, type) => {
+          acc[type.id] = type.nom;
+          return acc;
+        }, {});
+        setTypeArticles(types);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des types d\'articles :', error);
+      });
+  }, []);
       const itemsPerPage = 4;
 
   // État pour gérer la page actuelle
@@ -65,8 +74,8 @@ const Directe = () => {
   return (
     <div>
       <section className='Commande'>
-      <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
-      <input type="submit" value="Ajouter " className="bouton" />
+        <div className="d-flex justify-content-between align-items-center mb-3" style={{ marginRight: "30px", marginTop: '10px', marginBottom: '10px' }}>
+          <input type="submit" value="Ajouter " className="bouton" />
           <div className="input-group" style={{ width: '50%' }}>
             <input
               type="text"
@@ -80,31 +89,36 @@ const Directe = () => {
               <i className="fas fa-search fa-sm" />
             </button>
           </div>
-        </div>    
-            <div className="py-0 card-body">
+        </div>
+        <div className="py-0 card-body">
           <div className="table-responsive">
-            <table className="table table-striped table-hover">
-              <thead style={theadStyle}>
-                <tr>
-                  <th scope="col">Date d'entrée</th>
-                  <th scope="col">Designation</th>
-                  <th scope="col">Caractéristiques</th>
-                  <th scope="col">Quantité</th>
-                  <th scope="col">Type article</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayedArticles.map((article, index) => (
-                  <tr key={index}>
-      <td>{new Date(article.createdAt).toLocaleDateString()}</td>
-                    <td>{article.designation}</td>
-                    <td>{article.caracteristique}</td>
-                    <td>{article.quantite}</td>
-                    <td>{article.typeArticleId}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {displayedArticles.length === 0 ? (
+  <p>Aucune donnée à afficher pour le moment.</p>
+) : (
+  <table className="table table-striped table-hover">
+    <thead style={theadStyle}>
+      <tr>
+        <th scope="col">Date d'entrée</th>
+        <th scope="col">Designation</th>
+        <th scope="col">Caractéristiques</th>
+        <th scope="col">Quantité</th>
+        <th scope="col">Groupe d'article</th>
+      </tr>
+    </thead>
+    <tbody>
+      {displayedArticles.map((article, index) => (
+        <tr key={index}>
+          <td>{new Date(article.createdAt).toLocaleDateString()}</td>
+          <td>{article.designation}</td>
+          <td>{article.caracteristique}</td>
+          <td>{article.quantite}</td>
+          <td>{typeArticles[article.typeArticleId]}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)}
+
           </div>
         </div>
       </section>

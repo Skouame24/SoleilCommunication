@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // Importez la bibliothèque Axios
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FormFournisseur = () => {
   const [nom, setNom] = useState('');
@@ -25,16 +27,26 @@ const FormFournisseur = () => {
       const response = await axios.post('http://localhost:5001/api/fournisseur', formData);
       console.log(response.data); // Affichez la réponse du serveur
       
+      
       // Réinitialisez les états après la soumission
       setNom('');
       setPrenom('');
       setContact('');
       setEmail('');
       setLocalisation('');
-    } catch (error) {
-      console.error('Une erreur est survenue lors de la soumission du formulaire :', error);
-    }
-  };
+    // Afficher un toast de succès
+    toast.success('Fournisseur enregistré avec succès', {
+      position: toast.POSITION.TOP_RIGHT
+    });
+  } catch (error) {
+    console.error('Une erreur est survenue lors de la soumission du formulaire :', error);
+
+    // Afficher un toast d'erreur
+    toast.error('Une erreur est survenue lors de l\'enregistrement du fournisseur', {
+      position: toast.POSITION.TOP_RIGHT
+    });
+  }
+};
   const bouStyle = {
     width: "27%" ,
     marginLeft:"340px",
@@ -132,6 +144,7 @@ const FormFournisseur = () => {
     </div>
   </div>
 </form>
+<ToastContainer />
 
 </div>
 

@@ -79,28 +79,33 @@ const ClientsTable = () => {
         </div>
         <div className="py-0 card-body">
           <div className="table-responsive">
-            <table className="table table-striped table-hover">
-              <thead style={theadStyle}>
-                <tr>
-                  <th scope="col">Nom</th>
-                  <th scope="col">Prénom</th>
-                  <th scope="col">Email</th>
-                  <th scope="col">Contact</th>
-                  <th scope="col">Localisation</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayedClients.map((client, index) => (
-                  <tr key={index}>
-                    <td>{client.nom}</td>
-                    <td>{client.prenom}</td>
-                    <td>{client.email}</td>
-                    <td>{client.contact}</td>
-                    <td>{client.localisation}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {displayedClients.length === 0 ? (
+  <p>Aucune donnée à afficher pour le moment.</p>
+) : (
+  <table className="table table-striped table-hover">
+    <thead style={theadStyle}>
+      <tr>
+        <th scope="col">Nom</th>
+        <th scope="col">Prénom</th>
+        <th scope="col">Email</th>
+        <th scope="col">Contact</th>
+        <th scope="col">Localisation</th>
+      </tr>
+    </thead>
+    <tbody>
+      {displayedClients.map((client, index) => (
+        <tr key={index}>
+          <td>{client.nom}</td>
+          <td>{client.prenom}</td>
+          <td>{client.email}</td>
+          <td>{client.contact}</td>
+          <td>{client.localisation}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)}
+
           </div>
         </div>
       </section>

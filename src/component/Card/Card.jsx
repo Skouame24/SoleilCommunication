@@ -16,25 +16,33 @@ const Card = ({ style }) => {
 
 
   useEffect(() => {
-    // ... (autres parties du code)
-
-    // Récupérer le nombre total d'articles de la catégorie "airpods"
     axios.get('http://localhost:5001/api/articles/category/3')
       .then(response => {
-        const totalArticleCount = response.data.articles.length;
-        setAirpodsArticleCount(totalArticleCount);
+        const articles = response.data.articles;
+
+        // Calculer la somme des quantités pour la catégorie "airpods"
+        const totalQuantity = articles.reduce((sum, article) => sum + article.quantite, 0);
+        console.log(totalQuantity)
+
+        setAirpodsArticleCount(totalQuantity);
       })
       .catch(error => {
-        console.error('Erreur lors de la récupération du nombre d\'articles de la catégorie "airpods" :', error);
+        console.error('Erreur lors de la récupération des articles de la catégorie "airpods" :', error);
       });
+
+    // ... (autres parties du code)
   }, []);
+  
   useEffect(() => {
 
     // Récupérer le nombre total d'articles de la catégorie "fournisseurs"
     axios.get('http://localhost:5001/api/articles/category/2')
       .then(response => {
-        const totalArticleCount = response.data.articles.length;
-        setFournisseursArticleCount(totalArticleCount);
+        const articles = response.data.articles;
+        // Calculer la somme des quantités pour la catégorie "airpods"
+        const totalQuantity = articles.reduce((sum, article) => sum + article.quantite, 0);
+        console.log(totalQuantity)
+        setFournisseursArticleCount(totalQuantity);
       })
       .catch(error => {
         console.error('Erreur lors de la récupération du nombre d\'articles de la catégorie "fournisseurs" :', error);
@@ -46,8 +54,11 @@ const Card = ({ style }) => {
     // Récupérer le nombre total d'articles de la catégorie "informatique"
     axios.get('http://localhost:5001/api/articles/category/1')
       .then(response => {
-        const totalArticleCount = response.data.articles.length;
-        setInformatiqueArticleCount(totalArticleCount);
+        const articles = response.data.articles;
+         // Calculer la somme des quantités pour la catégorie "airpods"
+         const totalQuantity = articles.reduce((sum, article) => sum + article.quantite, 0);
+         console.log(totalQuantity)
+        setInformatiqueArticleCount(totalQuantity);
       })
       .catch(error => {
         console.error('Erreur lors de la récupération du nombre d\'articles de la catégorie "informatique" :', error);

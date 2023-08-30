@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const Fourniture = () => {
   const [fournitureArticles, setFournitureArticles] = useState([]);
+  const [typeArticles, setTypeArticles] = useState({});
 
   useEffect(() => {
     axios.get('http://localhost:5001/api/articles/category/2')
@@ -12,6 +13,18 @@ const Fourniture = () => {
       })
       .catch(error => {
         console.error('Erreur lors de la récupération des articles de type fourniture :', error);
+      });
+
+    axios.get('http://localhost:5001/api/type')
+      .then(response => {
+        const types = response.data.typeArticles.reduce((acc, type) => {
+          acc[type.id] = type.nom; // Utilisation de l'ID comme clé pour associer le nom du type d'article
+          return acc;
+        }, {});
+        setTypeArticles(types);
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des types d\'articles :', error);
       });
   }, []);
 
@@ -31,10 +44,10 @@ const Fourniture = () => {
             <table className="table table-striped table-hover">
               <thead style={theadStyle}>
                 <tr>
-                  <th scope="col">Designation </th>
+                  <th scope="col">Designation</th>
                   <th scope="col">Caracteristique</th>
                   <th scope="col">Quantité</th>
-                  <th scope="col">typearticleID</th>
+                  <th scope="col">Type d'article</th>
                 </tr>
               </thead>
               <tbody>
@@ -43,7 +56,7 @@ const Fourniture = () => {
                     <td>{article.designation}</td>
                     <td>{article.caracteristique}</td>
                     <td>{article.quantite}</td>
-                    <td>{article.typeArticleId}</td>
+                    <td>{typeArticles[article.typeArticleId]}</td>
                   </tr>
                 ))}
               </tbody>
